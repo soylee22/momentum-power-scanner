@@ -32,15 +32,15 @@
       },
       {
         "rank_overall": 3,
-        "ticker": "STX",
-        "name": "Seagate Technology",
+        "ticker": "CIEN",
+        "name": "Ciena",
         "sector": "Information Technology",
         "country": "US",
         "index": "S&P 500",
-        "price": 786.4199829101562,
-        "rs_rating": 98.2,
+        "price": 576.7899780273438,
+        "rs_rating": 98.5,
         "dist_from_high": 0.0,
-        "return_12m": 7.4830225796929,
+        "return_12m": 6.938204637445226,
         "composite": 0.9172749391727494
       },
       {
@@ -58,15 +58,15 @@
       },
       {
         "rank_overall": 5,
-        "ticker": "CIEN",
-        "name": "Ciena",
+        "ticker": "STX",
+        "name": "Seagate Technology",
         "sector": "Information Technology",
         "country": "US",
         "index": "S&P 500",
-        "price": 576.7899780273438,
-        "rs_rating": 98.5,
+        "price": 786.4199829101562,
+        "rs_rating": 98.2,
         "dist_from_high": 0.0,
-        "return_12m": 6.938204637445226,
+        "return_12m": 7.4830225796929,
         "composite": 0.9172749391727494
       },
       {
