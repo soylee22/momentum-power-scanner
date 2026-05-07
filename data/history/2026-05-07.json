@@ -1,7 +1,7 @@
 {
   "asof": "2026-05-07",
   "universe_size": 601,
-  "survivor_count": 137,
+  "survivor_count": 136,
   "top10": [
     {
       "rank_overall": 1,
@@ -14,7 +14,7 @@
       "rs_rating": 99.0,
       "dist_from_high": 0.0,
       "return_12m": 39.73909146499803,
-      "composite": 0.937956204379562
+      "composite": 0.9387254901960785
     },
     {
       "rank_overall": 2,
@@ -27,23 +27,10 @@
       "rs_rating": 98.7,
       "dist_from_high": 0.0,
       "return_12m": 9.77582734155719,
-      "composite": 0.9282238442822385
+      "composite": 0.9289215686274511
     },
     {
       "rank_overall": 3,
-      "ticker": "CIEN",
-      "name": "Ciena",
-      "sector": "Information Technology",
-      "country": "US",
-      "index": "S&P 500",
-      "price": 576.7899780273438,
-      "rs_rating": 98.5,
-      "dist_from_high": 0.0,
-      "return_12m": 6.910985448586611,
-      "composite": 0.9184914841849149
-    },
-    {
-      "rank_overall": 4,
       "ticker": "MU",
       "name": "Micron Technology",
       "sector": "Information Technology",
@@ -53,7 +40,20 @@
       "rs_rating": 98.3,
       "dist_from_high": 0.0,
       "return_12m": 7.308699042568973,
-      "composite": 0.9184914841849148
+      "composite": 0.9191176470588235
+    },
+    {
+      "rank_overall": 4,
+      "ticker": "CIEN",
+      "name": "Ciena",
+      "sector": "Information Technology",
+      "country": "US",
+      "index": "S&P 500",
+      "price": 576.7899780273438,
+      "rs_rating": 98.5,
+      "dist_from_high": 0.0,
+      "return_12m": 6.910985448586611,
+      "composite": 0.9191176470588235
     },
     {
       "rank_overall": 5,
@@ -66,7 +66,7 @@
       "rs_rating": 98.2,
       "dist_from_high": 0.0,
       "return_12m": 7.5120303308718785,
-      "composite": 0.9184914841849148
+      "composite": 0.9191176470588235
     },
     {
       "rank_overall": 6,
@@ -79,7 +79,7 @@
       "rs_rating": 98.0,
       "dist_from_high": 0.0,
       "return_12m": 4.575234315939356,
-      "composite": 0.9087591240875913
+      "composite": 0.9093137254901961
     },
     {
       "rank_overall": 7,
@@ -92,7 +92,7 @@
       "rs_rating": 97.4,
       "dist_from_high": 0.0,
       "return_12m": 3.63408428988397,
-      "composite": 0.889294403892944
+      "composite": 0.8897058823529411
     },
     {
       "rank_overall": 8,
@@ -105,7 +105,7 @@
       "rs_rating": 97.2,
       "dist_from_high": 0.0,
       "return_12m": 3.1891841136264834,
-      "composite": 0.8844282238442821
+      "composite": 0.8848039215686274
     },
     {
       "rank_overall": 9,
@@ -118,20 +118,20 @@
       "rs_rating": 97.0,
       "dist_from_high": 0.0,
       "return_12m": 3.058728812381413,
-      "composite": 0.8795620437956204
+      "composite": 0.8799019607843137
     },
     {
       "rank_overall": 10,
-      "ticker": "VRT",
-      "name": "Vertiv",
-      "sector": "Industrials",
+      "ticker": "LRCX",
+      "name": "Lam Research",
+      "sector": "Information Technology",
       "country": "US",
       "index": "S&P 500",
-      "price": 358.9200134277344,
-      "rs_rating": 96.9,
+      "price": 297.1700134277344,
+      "rs_rating": 96.7,
       "dist_from_high": 0.0,
-      "return_12m": 2.789557001282079,
-      "composite": 0.8722627737226277
+      "return_12m": 3.0501608234610407,
+      "composite": 0.8725490196078431
     }
   ]
 }

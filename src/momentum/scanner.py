@@ -29,6 +29,29 @@ HISTORY_DIR = ROOT / "data" / "history"
 console = Console()
 
 
+def _dedupe_share_classes(survivors: pd.DataFrame) -> pd.DataFrame:
+    """Where a single company has multiple share classes in the survivor pool
+    (e.g. Alphabet GOOGL/GOOG, Berkshire BRK.A/BRK.B, Fox FOX/FOXA), keep
+    only one — the lower-priced (more retail-accessible) class.
+
+    Detection: strip class-suffix patterns from the company name and group.
+    Selection: keep the lowest-price ticker in each group.
+    """
+    if survivors.empty:
+        return survivors
+    df = survivors.copy()
+    base = (
+        df["name"].astype(str)
+        .str.replace(r"\s*\(\s*Class\s+[A-Z]\s*\)\s*", "", regex=True, case=False)
+        .str.replace(r"\s+Class\s+[A-Z]\s*$", "", regex=True, case=False)
+        .str.strip()
+        .str.rstrip(".")
+    )
+    df["_base_name"] = base
+    df = df.sort_values("price", ascending=True).drop_duplicates("_base_name", keep="first")
+    return df.drop(columns=["_base_name"]).sort_index()
+
+
 def run(asof: dt.date | None = None, top_n: int = 10) -> dict:
     asof = asof or dt.date.today()
     console.rule(f"[bold]Momentum Power Scan · asof {asof.isoformat()}")
@@ -90,6 +113,14 @@ def run(asof: dt.date | None = None, top_n: int = 10) -> dict:
         f"({(survivors['index'] == 'S&P 500').sum()} S&P, "
         f"{(survivors['index'] == 'FTSE 100').sum()} FTSE)"
     )
+
+    survivors_before_dedupe = len(survivors)
+    survivors = _dedupe_share_classes(survivors)
+    if len(survivors) < survivors_before_dedupe:
+        console.print(
+            f"  Dedupe share classes: {survivors_before_dedupe} -> {len(survivors)} "
+            f"(kept the cheaper / more retail-accessible class)"
+        )
 
     if survivors.empty:
         console.print("[red]No Stage 2 survivors this week. Saving an empty top 10.[/]")
