@@ -2,13 +2,13 @@
 
 | # | Ticker | Name | Index | Sector | Price | RS | 52wH dist | 1y return | Composite |
 |---|--------|------|-------|--------|------:|---:|---------:|---------:|---------:|
-| 1 | `MU` | Micron Technology | S&P 500 | Information Technology | 677.76 | 98 | 0.0% | +743.8% | 0.965 |
-| 2 | `INTC` | Intel | S&P 500 | Information Technology | 113.74 | 98 | 0.0% | +470.4% | 0.949 |
-| 3 | `ALB` | Albemarle Corporation | S&P 500 | Materials | 216.48 | 97 | 0.0% | +283.2% | 0.912 |
-| 4 | `AMD` | Advanced Micro Devices | S&P 500 | Information Technology | 420.16 | 97 | 0.3% | +326.0% | 0.896 |
-| 5 | `GLW` | Corning Inc. | S&P 500 | Information Technology | 180.35 | 97 | 0.7% | +309.0% | 0.877 |
-| 6 | `SNDK` | Sandisk | S&P 500 | Information Technology | 1380.30 | 99 | 2.1% | +3980.1% | 0.861 |
-| 7 | `WDC` | Western Digital | S&P 500 | Information Technology | 471.02 | 99 | 2.5% | +968.1% | 0.829 |
-| 8 | `GOOGL` | Alphabet Inc. (Class A) | S&P 500 | Communication Services | 397.55 | 94 | 0.1% | +144.4% | 0.811 |
-| 9 | `GOOG` | Alphabet Inc. (Class C) | S&P 500 | Communication Services | 394.60 | 94 | 0.1% | +139.7% | 0.800 |
-| 10 | `GLEN.L` | Glencore | FTSE 100 | Mining | 569.20 | 93 | 0.0% | +129.8% | 0.797 |
+| 1 | `SNDK` | Sandisk | S&P 500 | Information Technology | 1409.98 | 99 | 0.0% | +3973.9% | 0.938 |
+| 2 | `WDC` | Western Digital | S&P 500 | Information Technology | 483.15 | 99 | 0.0% | +977.6% | 0.928 |
+| 3 | `CIEN` | Ciena | S&P 500 | Information Technology | 576.79 | 98 | 0.0% | +691.1% | 0.918 |
+| 4 | `MU` | Micron Technology | S&P 500 | Information Technology | 666.59 | 98 | 0.0% | +730.9% | 0.918 |
+| 5 | `STX` | Seagate Technology | S&P 500 | Information Technology | 786.42 | 98 | 0.0% | +751.2% | 0.918 |
+| 6 | `INTC` | Intel | S&P 500 | Information Technology | 113.01 | 98 | 0.0% | +457.5% | 0.909 |
+| 7 | `FIX` | Comfort Systems USA | S&P 500 | Industrials | 2011.49 | 97 | 0.0% | +363.4% | 0.889 |
+| 8 | `AMD` | Advanced Micro Devices | S&P 500 | Information Technology | 421.39 | 97 | 0.0% | +318.9% | 0.884 |
+| 9 | `GLW` | Corning Inc. | S&P 500 | Information Technology | 181.57 | 97 | 0.0% | +305.9% | 0.880 |
+| 10 | `VRT` | Vertiv | S&P 500 | Industrials | 358.92 | 97 | 0.0% | +279.0% | 0.872 |

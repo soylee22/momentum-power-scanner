@@ -23,6 +23,7 @@ from .palantir import PL
 ROOT = Path(__file__).resolve().parent.parent.parent
 HISTORY_DIR = ROOT / "data" / "history"
 OUTPUTS = ROOT / "outputs"
+SENT_MARKER = ROOT / "data" / ".last_sent_digest.json"
 
 DEFAULT_TO = "leeslater1992@gmail.com"
 DEFAULT_FROM = "leeslater1992@gmail.com"
@@ -297,6 +298,33 @@ def render_digest_html(snap: dict, prev: dict | None, dashboard_url: str) -> str
 </body></html>"""
 
 
+def _top10_signature(snap: dict) -> str:
+    """Stable hash of the leaderboard contents — used to suppress duplicate sends."""
+    import hashlib
+    keys = [(int(r["rank_overall"]), r["ticker"]) for r in snap.get("top10", [])]
+    payload = f"{snap.get('asof', '')}|" + "|".join(f"{k[0]}:{k[1]}" for k in keys)
+    return hashlib.sha256(payload.encode()).hexdigest()
+
+
+def _already_sent(signature: str) -> bool:
+    """True if a digest with this exact signature has already been emailed."""
+    if not SENT_MARKER.exists():
+        return False
+    try:
+        prev = json.loads(SENT_MARKER.read_text())
+        return prev.get("signature") == signature
+    except (json.JSONDecodeError, OSError):
+        return False
+
+
+def _mark_sent(signature: str, asof: str) -> None:
+    SENT_MARKER.write_text(json.dumps({
+        "signature": signature,
+        "asof": asof,
+        "sent_at": dt.datetime.now(dt.timezone.utc).isoformat(),
+    }, indent=2))
+
+
 def send_digest(asof: dt.date | None = None) -> None:
     load_dotenv()
     snap = _latest_snapshot()
@@ -317,6 +345,13 @@ def send_digest(asof: dt.date | None = None) -> None:
         print("[skip] GMAIL_APP_PASSWORD not set, no email sent")
         return
 
+    # Idempotency: don't re-send a digest with the same leaderboard contents.
+    # Defends against duplicate workflow runs and intra-day re-triggers.
+    signature = _top10_signature(snap)
+    if _already_sent(signature) and os.environ.get("DIGEST_FORCE") != "1":
+        print(f"[skip] digest with this signature already sent (set DIGEST_FORCE=1 to override)")
+        return
+
     sender = os.environ.get("DIGEST_FROM", DEFAULT_FROM)
     recipient = os.environ.get("DIGEST_TO", DEFAULT_TO)
 
@@ -330,6 +365,7 @@ def send_digest(asof: dt.date | None = None) -> None:
     with smtplib.SMTP_SSL("smtp.gmail.com", 465) as s:
         s.login(sender, pw_clean)
         s.sendmail(sender, [recipient], msg.as_string())
+    _mark_sent(signature, snap["asof"])
     print(f"digest sent -> {recipient}")
 
 

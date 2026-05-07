@@ -45,7 +45,13 @@ def _write_cache(df: pd.DataFrame) -> None:
 
 
 def _download_batch(tickers: list[str], start: dt.date, end: dt.date) -> pd.DataFrame:
-    """Download daily Adj Close + Volume for a batch in one call."""
+    """Download daily Adj Close + Volume for a batch in one call.
+
+    yfinance is end-exclusive on `end`. We pass `end=today` (NOT today+1)
+    so the partial intraday bar for the current trading day is never
+    included. Re-runs on the same calendar day therefore see identical
+    data, regardless of market session.
+    """
     if not tickers:
         return pd.DataFrame(columns=["ticker", "date", "close", "volume"])
 
@@ -101,7 +107,10 @@ def update_cache(
       - if up to date: skip
     """
     asof = asof or dt.date.today()
-    end = asof + dt.timedelta(days=1)
+    # End-exclusive: yfinance returns bars in [start, end). We pass end=asof
+    # (today), which means today's partial bar is NOT included. The most
+    # recent bar we get is yesterday's close. Re-runs are deterministic.
+    end = asof
 
     tickers = list(dict.fromkeys(tickers))  # de-dup, preserve order
     cache = _read_cache()
@@ -115,15 +124,21 @@ def update_cache(
     fresh_start = asof - dt.timedelta(days=initial_lookback_days)
     by_start: dict[dt.date, list[str]] = {}
     skipped = 0
+    # We deliberately don't include today's bar (see _download_batch),
+    # so a ticker is "up to date" once it has data through asof - 1 day.
+    last_completed = asof - dt.timedelta(days=1)
     for tk in tickers:
         last = last_dates.get(tk)
         if last is None:
             start = fresh_start
-        elif last >= asof:
+        elif last >= last_completed:
             skipped += 1
             continue  # already up to date
         else:
             start = last + dt.timedelta(days=1)
+        if start >= asof:
+            skipped += 1
+            continue  # zero-day window, nothing to fetch
         by_start.setdefault(start, []).append(tk)
 
     if skipped:
