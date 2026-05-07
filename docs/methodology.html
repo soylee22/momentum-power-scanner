@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Methodology · Momentum Power Scanner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #0D1014;
+      --stage: #0D1014;
+      --paper: #FFFFFF;
+      --bone: #D4D4CC;
+      --mute: #A8A8A4;
+      --graphite: #1A1A1A;
+      --hairline-dk: #3A3D42;
+      --hairline-lt: #9A9A95;
+      --green: #10D070;
+      --card-mid: #15181D;
+    }
+    * { box-sizing: border-box; }
+    html, body { background: var(--ink); }
+    body {
+      margin: 0;
+      color: var(--bone);
+      font-family: "Inter", system-ui, -apple-system, sans-serif;
+      font-size: 16px;
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+    }
+    .page {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 80px 32px 120px;
+    }
+
+    /* Chip + header */
+    .chip {
+      display: inline-block;
+      padding: 8px 16px;
+      border: 1px solid var(--bone);
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.10em;
+      color: var(--bone);
+    }
+    h1 {
+      font-size: 56px;
+      font-weight: 400;
+      letter-spacing: -0.018em;
+      line-height: 1.04;
+      color: var(--bone);
+      margin: 36px 0 22px;
+    }
+    .lede {
+      font-size: 18px;
+      line-height: 1.55;
+      color: var(--mute);
+      max-width: 640px;
+      margin: 0;
+    }
+    .lede em { color: var(--bone); font-style: normal; }
+
+    /* Section structure */
+    .section-rule {
+      border: 0;
+      border-top: 1px solid var(--hairline-dk);
+      margin: 80px 0 0;
+    }
+    .section-label {
+      display: block;
+      font-size: 10px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--mute);
+      margin: 56px 0 12px;
+    }
+    h2 {
+      font-size: 32px;
+      font-weight: 500;
+      letter-spacing: -0.012em;
+      line-height: 1.15;
+      color: var(--bone);
+      margin: 0 0 28px;
+    }
+    h3 {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--bone);
+      margin: 32px 0 8px;
+    }
+    p { margin: 0 0 18px; color: var(--bone); }
+    p.dim { color: var(--mute); }
+
+    /* Inline elements */
+    code, .mono {
+      font-family: "JetBrains Mono", Menlo, monospace;
+      font-size: 13px;
+      color: var(--bone);
+      background: var(--card-mid);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+    .em { color: var(--green); font-weight: 500; }
+
+    /* Cards */
+    .card {
+      background: var(--card-mid);
+      border-radius: 24px;
+      padding: 32px 32px;
+      margin: 28px 0;
+    }
+    .card.tight { padding: 20px 24px; }
+
+    /* The 8 gates list */
+    .gate {
+      display: grid;
+      grid-template-columns: 56px 1fr;
+      gap: 0;
+      padding: 28px 0;
+      border-bottom: 1px solid var(--hairline-dk);
+    }
+    .gate:last-child { border-bottom: 0; }
+    .gate .num {
+      font-size: 22px;
+      font-weight: 500;
+      color: var(--green);
+      letter-spacing: -0.01em;
+      line-height: 1;
+      padding-top: 4px;
+    }
+    .gate .body { padding-right: 8px; }
+    .gate h3 {
+      margin: 0 0 8px;
+      font-size: 17px;
+      font-weight: 600;
+    }
+    .gate .formal {
+      font-family: "JetBrains Mono", Menlo, monospace;
+      font-size: 12px;
+      color: var(--mute);
+      margin: 0 0 14px;
+      letter-spacing: 0.01em;
+    }
+    .gate .why {
+      color: var(--bone);
+      font-size: 15px;
+      line-height: 1.6;
+      margin: 0 0 6px;
+    }
+    .gate .filters {
+      color: var(--mute);
+      font-size: 14px;
+      margin: 6px 0 0;
+    }
+    .gate .filters strong { color: var(--bone); font-weight: 500; }
+
+    /* Numbered list (staccato bullets in dark) */
+    ol.bullets {
+      list-style: none;
+      padding: 0;
+      margin: 16px 0 0;
+      counter-reset: b;
+    }
+    ol.bullets li {
+      counter-increment: b;
+      position: relative;
+      padding: 6px 0 6px 36px;
+      color: var(--bone);
+    }
+    ol.bullets li::before {
+      content: counter(b, decimal-leading-zero);
+      position: absolute;
+      left: 0;
+      top: 6px;
+      color: var(--mute);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+    }
+
+    /* Worked-example table */
+    table.example {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 8px 0 0;
+      font-variant-numeric: tabular-nums;
+    }
+    table.example th {
+      text-align: left;
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--mute);
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--hairline-dk);
+    }
+    table.example th.right { text-align: right; }
+    table.example td {
+      padding: 13px 12px;
+      border-bottom: 1px solid var(--hairline-dk);
+      font-size: 14px;
+      color: var(--bone);
+    }
+    table.example td.right { text-align: right; }
+    table.example tr:last-child td { border-bottom: 0; }
+    table.example tr.total td { color: var(--green); font-weight: 600; }
+
+    /* SVG illustration card */
+    .illus {
+      background: var(--card-mid);
+      border-radius: 24px;
+      padding: 28px;
+      margin: 28px 0 16px;
+    }
+    .illus-cap {
+      font-size: 11px;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      color: var(--mute);
+      margin: 0 0 14px;
+    }
+
+    /* Footer */
+    .foot {
+      margin-top: 96px;
+      padding-top: 32px;
+      border-top: 1px solid var(--hairline-dk);
+      font-size: 12px;
+      color: var(--mute);
+      letter-spacing: 0.02em;
+      line-height: 1.7;
+    }
+    .foot a {
+      color: var(--bone);
+      text-decoration: none;
+      border-bottom: 1px solid var(--hairline-dk);
+    }
+    .foot a:hover { color: var(--green); border-color: var(--green); }
+    .foot .links {
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    /* Pull-quote */
+    .pull {
+      border-left: 1.5px solid var(--bone);
+      padding: 4px 0 4px 24px;
+      margin: 24px 0;
+      font-size: 20px;
+      line-height: 1.45;
+      color: var(--bone);
+    }
+
+    /* Responsive */
+    @media (max-width: 720px) {
+      h1 { font-size: 38px; }
+      h2 { font-size: 24px; }
+      .page { padding: 48px 24px 80px; }
+      .card { padding: 24px 20px; }
+      .gate { grid-template-columns: 44px 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+
+    <span class="chip">METHODOLOGY&nbsp;&nbsp;|&nbsp;&nbsp;MOMENTUM POWER</span>
+    <h1>How the scanner finds the top 10.</h1>
+    <p class="lede">
+      A plain-English walkthrough of every step the scanner takes between
+      <em>"here is the S&amp;P 500 plus the FTSE 100"</em> and
+      <em>"here are the ten strongest momentum names this week."</em>
+      No black boxes. No tuned parameters. Just three filters, three rankings,
+      and one number that tells you who is leading.
+    </p>
+
+    <hr class="section-rule"/>
+
+
+    <span class="section-label">01 / The big picture</span>
+    <h2>Filter first, then rank.</h2>
+    <p>
+      The scanner splits the work into two phases. The first phase is a
+      <strong>filter</strong>. Every stock either passes or fails based on
+      eight strict tests. The second phase is a <strong>ranker</strong>.
+      Among the survivors, three different momentum signals are averaged
+      to produce one composite score.
+    </p>
+    <p>
+      The filter is binary by design. It does not weight things. It does not
+      compromise. A stock either looks like it is in a sustained uptrend or
+      it doesn't. This stops the scanner from rewarding stocks that are merely
+      <em>less bad</em> than their peers in a falling market.
+    </p>
+    <p>
+      The ranker is what produces the leaderboard. Once you know a stock is
+      genuinely in an uptrend, the question becomes: <em>how strong is this
+      uptrend compared to other uptrends right now?</em> That is what the
+      composite score measures.
+    </p>
+
+    <div class="card">
+      <p class="dim" style="margin-bottom:8px; font-size:11px; letter-spacing:0.10em; text-transform:uppercase;">PIPELINE</p>
+      <ol class="bullets" style="margin-top:8px;">
+        <li>Pull the constituents of the S&amp;P 500 and FTSE 100 from Wikipedia.</li>
+        <li>Download 14 months of daily prices for each ticker.</li>
+        <li>Compute relative strength and trend-template features for every stock.</li>
+        <li>Apply the eight Minervini gates. Survivors continue, the rest are filtered out.</li>
+        <li>Rank the survivors on three independent momentum signals.</li>
+        <li>Take the top 10 by composite score and publish the digest, dashboard, and charts.</li>
+      </ol>
+    </div>
+
+    <hr class="section-rule"/>
+
+
+    <span class="section-label">02 / The universe</span>
+    <h2>Where the candidates come from.</h2>
+    <p>
+      The scanner pulls from two indices: the <span class="em">S&amp;P 500</span>
+      (about 500 large-cap US stocks) and the <span class="em">FTSE 100</span>
+      (the 100 largest UK-listed stocks). That is roughly 600 names in total.
+    </p>
+    <p>
+      Why these two? Three reasons. Index membership is a basic liquidity filter
+      (you can actually buy these on Trading 212). The constituents are public
+      and free to scrape from Wikipedia. And it gives a UK investor a fair shot
+      at FTSE-listed momentum names that purely-US scanners miss.
+    </p>
+    <p>
+      <strong>Returns are computed in local currency</strong> (USD for US
+      stocks, GBP for UK stocks). FX moves are not part of momentum, they are
+      noise that contaminates the signal. A British investor who held a US
+      stock benefitted from FX too, but that is a separate question from
+      <em>"is this stock genuinely strong?"</em>.
+    </p>
+
+    <hr class="section-rule"/>
+
+
+    <span class="section-label">03 / The filter</span>
+    <h2>Mark Minervini's eight Stage 2 gates.</h2>
+    <p>
+      Mark Minervini is a US trader who won the US Investing Championship in 1997
+      and codified his approach in <em>Trade Like a Stock Market Wizard</em>.
+      He divides every stock's life into four stages: <strong>Stage 1</strong>
+      (basing, going nowhere), <strong>Stage 2</strong> (markup, going up),
+      <strong>Stage 3</strong> (topping, distribution), <strong>Stage 4</strong>
+      (markdown, going down).
+    </p>
+    <p>
+      You only want to own Stage 2 stocks. The other three stages are
+      <em>where money goes to die</em>. Minervini's eight-gate trend template
+      is his mechanical test for whether a stock is in Stage 2. If a stock fails
+      <strong>any one</strong> of the eight tests, it is not Stage 2 and the
+      scanner discards it.
+    </p>
+    <p class="dim">
+      Each gate is shown below with its plain-English meaning, the formal
+      mathematical test, and what it actually filters out.
+    </p>
+
+    <div style="margin-top:36px;">
+
+      <div class="gate">
+        <div class="num">01</div>
+        <div class="body">
+          <h3>Price is above both the long-term averages.</h3>
+          <p class="formal">price &gt; 150-day SMA &nbsp; AND &nbsp; price &gt; 200-day SMA</p>
+          <p class="why">
+            The simplest possible "is the trend up?" test. The 200-day moving
+            average is the most-watched long-term trend line in the world.
+            If the current price is below it, the stock is by definition in a
+            downtrend on a long-term basis.
+          </p>
+          <p class="filters"><strong>Filters out:</strong> stocks below their long-term trend, stocks recovering from a deep drawdown but not yet through resistance.</p>
+        </div>
+      </div>
+
+      <div class="gate">
+        <div class="num">02</div>
+        <div class="body">
+          <h3>The medium-term average is above the long-term average.</h3>
+          <p class="formal">150-day SMA &gt; 200-day SMA</p>
+          <p class="why">
+            The 150-day average reacts faster than the 200-day. If the faster
+            average is above the slower one, the trend is accelerating, not
+            decaying. This is the moving-average equivalent of <em>"recent
+            momentum is stronger than older momentum"</em>.
+          </p>
+          <p class="filters"><strong>Filters out:</strong> stocks where the medium-term trend has rolled over even though price might temporarily be above the 200-day.</p>
+        </div>
+      </div>
+
+      <div class="gate">
+        <div class="num">03</div>
+        <div class="body">
+          <h3>The long-term average has been rising for at least a month.</h3>
+          <p class="formal">200-day SMA today &gt; 200-day SMA 21 trading days ago</p>
+          <p class="why">
+            A flat 200-day average is consistent with a stock going sideways.
+            For a stock to be a real Stage 2 name, the 200-day average itself
+            should be sloping upward. One month is the minimum; Minervini
+            prefers four to five months.
+          </p>
+          <p class="filters"><strong>Filters out:</strong> stocks where the 200-day average is flat or only just turning up. The trend has to be established, not nascent.</p>
+        </div>
+      </div>
+
+      <div class="gate">
+        <div class="num">04</div>
+        <div class="body">
+          <h3>The averages are stacked in trend order.</h3>
+          <p class="formal">50-day SMA &gt; 150-day SMA &nbsp; AND &nbsp; 50-day SMA &gt; 200-day SMA</p>
+          <p class="why">
+            In a clean uptrend, you expect the shortest moving average to be
+            highest, then medium, then longest. The 50-day average represents
+            roughly the last two-and-a-half months of trading. If it's above
+            both longer averages, the most recent quarter has been the
+            strongest part of the trend.
+          </p>
+          <p class="filters"><strong>Filters out:</strong> stocks where short-term action has weakened relative to the longer trend. Pullbacks. Distribution.</p>
+        </div>
+      </div>
+
+      <div class="gate">
+        <div class="num">05</div>
+        <div class="body">
+          <h3>Price is above the short-term average too.</h3>
+          <p class="formal">price &gt; 50-day SMA</p>
+          <p class="why">
+            Even in a Stage 2 stock, price can dip below the 50-day during a
+            normal correction. This gate insists the dip is over. The stock
+            is back above its 50-day, suggesting buyers stepped in.
+          </p>
+          <p class="filters"><strong>Filters out:</strong> stocks in active correction. We are buying breakouts, not catching falling knives.</p>
+        </div>
+      </div>
+
+      <div class="gate">
+        <div class="num">06</div>
+        <div class="body">
+          <h3>Price is at least 30% above the 52-week low.</h3>
+          <p class="formal">price &gt;= 1.30 &times; 52-week low</p>
+          <p class="why">
+            A stock that just bounced off its low is not Stage 2 yet. It might
+            be the start of one, but it might equally be a dead-cat bounce.
+            Insisting on 30% above the low confirms a meaningful rally has
+            already occurred, which is itself evidence the new trend is real.
+          </p>
+          <p class="filters"><strong>Filters out:</strong> early bottom-fishers, stocks still close to their pain points.</p>
+        </div>
+      </div>
+
+      <div class="gate">
+        <div class="num">07</div>
+        <div class="body">
+          <h3>Price is within 25% of the 52-week high.</h3>
+          <p class="formal">price &gt;= 0.75 &times; 52-week high</p>
+          <p class="why">
+            A stock that is more than 25% off its high is in correction, not
+            Stage 2. The high might have been six months ago and the stock
+            has been bleeding ever since. We want stocks that are still
+            <em>near</em> their highs, not stocks that <em>used to be</em>
+            high.
+          </p>
+          <p class="filters"><strong>Filters out:</strong> faded former champions, stocks in extended consolidation more than a quarter off the high.</p>
+        </div>
+      </div>
+
+      <div class="gate">
+        <div class="num">08</div>
+        <div class="body">
+          <h3>The relative strength rating is at least 70.</h3>
+          <p class="formal">RS rating &gt;= 70</p>
+          <p class="why">
+            All the previous gates are about the stock's own price history.
+            This one is about how the stock compares to <em>everything else</em>.
+            The relative strength rating ranks the stock against the entire
+            universe; an RS of 70 means the stock has outperformed at least
+            70% of all stocks in the scan. The next section explains exactly
+            how this is calculated.
+          </p>
+          <p class="filters"><strong>Filters out:</strong> stocks that pass all the technical gates but are merely keeping pace with the market. Stage 2 demands relative leadership, not relative survival.</p>
+        </div>
+      </div>
+
+    </div>
+
+    <p class="pull">
+      A stock has to clear <em>all eight</em> gates simultaneously. Failing any
+      one of them is enough to drop the stock from the survivor pool, no
+      matter how strong it looks on the others.
+    </p>
+    <p class="dim">
+      In a typical week roughly 15&ndash;25% of the universe will pass all eight.
+      In a strong tape it can be higher. In a falling market it collapses
+      towards zero, which is exactly the right behaviour: the scanner stops
+      finding "winners" when there are none.
+    </p>
+
+    <hr class="section-rule"/>
+
+
+    <span class="section-label">04 / The relative strength rating</span>
+    <h2>How RS is computed.</h2>
+    <p>
+      The RS rating used here is the <span class="em">IBD-style</span>
+      construction (after the long-running US publication <em>Investor's
+      Business Daily</em>). It is built in two steps: a weighted return is
+      computed for each stock, and that weighted return is then ranked across
+      the entire universe.
+    </p>
+
+    <h3>Step 1: the weighted return</h3>
+    <p>
+      For each stock the scanner takes its price return over four windows
+      and averages them with declining weights:
+    </p>
+    <p class="mono" style="display:block; padding:18px 20px; margin:10px 0 18px;">
+      weighted_return = 0.4 &times; r<sub>3m</sub> &nbsp;+&nbsp; 0.2 &times; r<sub>6m</sub> &nbsp;+&nbsp; 0.2 &times; r<sub>9m</sub> &nbsp;+&nbsp; 0.2 &times; r<sub>12m</sub>
+    </p>
+    <p>
+      The most-recent quarter gets double the weight of any older quarter.
+      Why? Because momentum decays. A stock that ripped twelve months ago
+      and has stalled since is a different beast from a stock that ripped
+      three months ago and is still ripping. The weighting rewards <em>fresh</em>
+      strength, not stale strength.
+    </p>
+
+    <h3>Step 2: the percentile rank</h3>
+    <p>
+      The weighted return is then ranked across the full universe of 600+
+      stocks. A stock with a weighted return better than 95% of all other
+      stocks gets an RS rating of 95. A median stock gets 50. The worst
+      stocks get 1.
+    </p>
+    <p>
+      This is the same scaling IBD has been using since the 1980s. It strips
+      out absolute return magnitudes (a +500% gain in a roaring tape might
+      not be that special; a +30% gain in a flat tape can be world-class)
+      and instead asks <em>how unusual is this stock's strength compared to
+      its peers right now?</em>
+    </p>
+
+    <hr class="section-rule"/>
+
+
+    <span class="section-label">05 / The composite score</span>
+    <h2>How the top 10 is chosen.</h2>
+    <p>
+      Among the survivors of the eight gates, the scanner needs a way to
+      decide which are <em>strongest</em>. One number is not enough,
+      because momentum has different facets. So the composite combines three
+      independent signals.
+    </p>
+
+    <div class="card">
+      <h3 style="margin-top:0;">The three components</h3>
+      <ol class="bullets">
+        <li><strong>RS rating.</strong> Recent-weighted return, ranked across the universe. Captures absolute strength relative to peers.</li>
+        <li><strong>52-week-high proximity.</strong> The current price as a fraction of the 52-week high. Captures whether the stock is still in a clean uptrend or fading from a peak.</li>
+        <li><strong>1-year total return.</strong> The simple "what did this stock do over the year" number, no weighting. Captures sustained, long-horizon strength.</li>
+      </ol>
+    </div>
+
+    <p>
+      The three components are on different scales (RS is 1&ndash;99,
+      proximity is a percentage, 1-year return can be anywhere from
+      &minus;50% to several thousand percent). To combine them fairly, each
+      is converted into a rank within the survivor pool: the best survivor
+      on that signal gets 1.0, the worst gets 0.0, the median gets 0.5.
+    </p>
+
+    <p class="mono" style="display:block; padding:18px 20px; margin:10px 0 18px;">
+      composite = ( rank<sub>RS</sub> &nbsp;+&nbsp; rank<sub>proximity</sub> &nbsp;+&nbsp; rank<sub>1y</sub> ) &nbsp;/&nbsp; 3
+    </p>
+
+    <p>
+      Equal weights. No tuning. The composite is then a number between 0
+      and 1. The top 10 stocks by composite are this week's leaderboard.
+    </p>
+
+    <p class="dim">
+      Why three signals not one? Because a stock can be strong on one
+      measure and weak on another. A name with a brilliant 1-year return
+      that has rolled over from its peak is structurally different from a
+      name that is still pushing new highs. Averaging three independent
+      ranks penalises one-trick performances and rewards stocks that look
+      strong from every angle simultaneously.
+    </p>
+
+    <hr class="section-rule"/>
+
+
+    <span class="section-label">06 / Worked example</span>
+    <h2>How Intel scored 0.908 this week.</h2>
+    <p>
+      Take Intel. Among the 137 Stage 2 survivors this week, here is how its
+      three component ranks added up:
+    </p>
+
+    <div class="card">
+      <table class="example">
+        <thead>
+          <tr>
+            <th>SIGNAL</th>
+            <th class="right">RAW VALUE</th>
+            <th class="right">RANK WITHIN SURVIVORS</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>RS rating</td>
+            <td class="right">98</td>
+            <td class="right">~ 0.95</td>
+          </tr>
+          <tr>
+            <td>Distance from 52-week high</td>
+            <td class="right">0.0%</td>
+            <td class="right">~ 0.85</td>
+          </tr>
+          <tr>
+            <td>1-year total return</td>
+            <td class="right">+457%</td>
+            <td class="right">~ 0.93</td>
+          </tr>
+          <tr class="total">
+            <td>Composite (mean of the three ranks)</td>
+            <td class="right"></td>
+            <td class="right">0.908</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>
+      Read the score as: <em>"Intel is in roughly the top 10% of all Stage 2
+      survivors on every signal we measure, simultaneously."</em>
+    </p>
+    <p class="dim">
+      Note that the proximity rank (0.85, not 1.0) reflects something
+      important about this week. About 53 of the 137 survivors are tied at
+      0.0% distance from their 52-week high, so they all share a percentile
+      rank around 0.85, the average rank of the tied positions. In a
+      tape where fewer stocks are at fresh highs, this number would
+      discriminate more.
+    </p>
+
+    <hr class="section-rule"/>
+
+
+    <span class="section-label">07 / What the score does not tell you</span>
+    <h2>Honest limits.</h2>
+    <p>
+      The scanner is a momentum tool. It is silent on three big things,
+      and you should be silent about them too when you use it.
+    </p>
+
+    <ol class="bullets">
+      <li><strong>It does not say if a stock is overvalued.</strong> There are no fundamentals in the model. Earnings, valuation, debt, management quality &mdash; all absent. A stock with a composite of 0.95 might be trading at 200x earnings.</li>
+      <li><strong>It does not predict future returns.</strong> Momentum is a backward-looking signal that <em>tends</em> to persist, not a guarantee that it will. Past Stage 2 stocks have rolled over without warning more than once.</li>
+      <li><strong>It does not give you a sell signal.</strong> The scanner only screens for entries. Exit discipline is your responsibility: trail a stop, watch for breaks below the 50-day, watch the tape regime.</li>
+      <li><strong>It does not adjust for risk.</strong> Two stocks at composite 0.9 may have very different volatilities. The scanner is silent on position sizing.</li>
+    </ol>
+
+    <hr class="section-rule"/>
+
+
+    <span class="section-label">08 / Cadence and outputs</span>
+    <h2>What the scanner produces, and when.</h2>
+    <p>
+      The scanner runs every Sunday evening (21:23 UTC) on GitHub Actions.
+      It then publishes:
+    </p>
+    <ol class="bullets">
+      <li>A <strong>Gmail digest</strong> with the new top 10, week-on-week entries and exits.</li>
+      <li>A <strong>dashboard</strong> at <a href="./" style="color:var(--bone); border-bottom:1px solid var(--hairline-dk);">soylee22.github.io/momentum-power-scanner</a>.</li>
+      <li><strong>Per-ticker charts</strong> with the 50/150/200-day moving averages and 52-week range bands marked.</li>
+      <li>A <strong>CSV and Markdown table</strong> for downstream analysis.</li>
+      <li>A <strong>JSON snapshot</strong> appended to <code>data/history/</code>, for tracking how the leaderboard evolves over time.</li>
+    </ol>
+
+    <p style="margin-top:32px;">
+      The price cache (<code>data/prices.parquet</code>) is incremental: every
+      run only downloads bars since the last run. The history file builds up
+      week-by-week so over time you can ask questions like <em>"what was the
+      composite of stock X on date Y?"</em>.
+    </p>
+
+    <div class="foot">
+      <div class="links">
+        <a href="./">Live dashboard</a>
+        <a href="https://github.com/soylee22/momentum-power-scanner">Source repo</a>
+        <a href="./history.json">Snapshot history (JSON)</a>
+      </div>
+      Methodology after Mark Minervini's <em>Trade Like a Stock Market Wizard</em>
+      and the IBD-style relative strength rating. Data: yfinance.
+      Independent computation, no third-party feeds. This is a personal
+      research tool, not investment advice.
+    </div>
+
+  </div>
+</body>
+</html>
