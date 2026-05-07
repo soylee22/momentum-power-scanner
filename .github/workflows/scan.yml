@@ -1,0 +1,78 @@
+name: Weekly Momentum Power scan
+
+on:
+  schedule:
+    # Sunday 21:23 UTC. Off-hour minute reduces collision with other GHA crons.
+    # 22:23 BST during summer, 21:23 GMT in winter — either way, after Friday close.
+    - cron: "23 21 * * 0"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: momentum-power-scan
+  cancel-in-progress: false
+
+jobs:
+  scan-and-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+
+      - name: Run scanner
+        run: python -m momentum.scanner
+        env:
+          PYTHONUNBUFFERED: "1"
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+          DIGEST_TO: ${{ vars.DIGEST_TO || 'leeslater1992@gmail.com' }}
+          DIGEST_FROM: ${{ vars.DIGEST_FROM || 'leeslater1992@gmail.com' }}
+          DASHBOARD_URL: https://soylee22.github.io/momentum-power-scanner/
+
+      - name: Commit data + dashboard
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/prices.parquet data/universe.parquet data/history/ docs/ outputs/latest.csv outputs/latest.md
+          if git diff --staged --quiet; then
+            echo "Nothing to commit."
+            exit 0
+          fi
+          git commit -m "weekly: momentum scan $(date -u +%Y-%m-%d)"
+          for attempt in 1 2 3; do
+            if git push; then exit 0; fi
+            echo "Push rejected (attempt $attempt), rebasing..."
+            git pull --rebase origin main || git rebase --abort
+            sleep 3
+          done
+          git push
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs
+
+  deploy-pages:
+    needs: scan-and-publish
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

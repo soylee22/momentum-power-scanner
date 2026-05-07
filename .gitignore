@@ -1,0 +1,16 @@
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.venv/
+.env
+.pytest_cache/
+.DS_Store
+
+# Local one-off runs
+outputs/_drafts/
+
+# Keep data/ committed:
+#   data/prices.parquet (incrementally appended price history)
+#   data/universe.parquet (weekly-refreshed constituents)
+#   data/history/*.json (weekly snapshots)

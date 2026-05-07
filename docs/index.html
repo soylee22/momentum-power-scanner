@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Momentum Power · 2026-05-07</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #0D1014;
+      --stage: #E2E2E0;
+      --bone: #D4D4CC;
+      --mute: #A8A8A4;
+      --graphite: #1A1A1A;
+      --hairline-dk: #3A3D42;
+      --hairline-lt: #9A9A95;
+      --green: #10D070;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--stage);
+      color: var(--graphite);
+      font-family: "Inter", system-ui, -apple-system, sans-serif;
+      font-size: 15px;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+    .page {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 64px 40px 80px;
+    }
+    .chip {
+      display: inline-block;
+      padding: 8px 16px;
+      border: 1px solid var(--graphite);
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      color: var(--graphite);
+    }
+    h1 {
+      font-size: 56px;
+      font-weight: 400;
+      letter-spacing: -0.018em;
+      line-height: 1.05;
+      margin: 28px 0 16px;
+    }
+    .lede {
+      max-width: 640px;
+      color: #4A4A47;
+      font-size: 16px;
+      line-height: 1.6;
+    }
+    hr { border: 0; border-top: 1px solid var(--hairline-lt); margin: 56px 0 36px; }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 32px;
+      margin: 24px 0 40px;
+    }
+    .stat .num {
+      font-size: 56px;
+      font-weight: 600;
+      letter-spacing: -0.025em;
+      line-height: 1;
+    }
+    .stat.accent .num { color: var(--green); }
+    .stat .lbl {
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--mute);
+      margin-top: 8px;
+    }
+    .card {
+      background: var(--ink);
+      color: var(--bone);
+      border-radius: 28px;
+      padding: 36px 32px;
+    }
+    .card h2 {
+      font-size: 24px;
+      font-weight: 500;
+      letter-spacing: -0.005em;
+      margin: 0 0 24px;
+    }
+    table { width: 100%; border-collapse: collapse; }
+    thead th {
+      text-align: left;
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--mute);
+      padding: 8px 10px;
+      border-bottom: 1px solid var(--hairline-dk);
+    }
+    thead th.right { text-align: right; }
+    tbody td {
+      padding: 14px 10px;
+      border-bottom: 1px solid var(--hairline-dk);
+      font-variant-numeric: tabular-nums;
+    }
+    td.rank { color: var(--mute); font-size: 12px; width: 36px; }
+    td.ticker a { color: var(--bone); text-decoration: none; display: block; }
+    td.ticker a:hover .tk { color: var(--green); }
+    td.ticker .tk { font-weight: 600; font-size: 14px; }
+    td.ticker .tk-meta { display: block; color: var(--mute); font-size: 11px; margin-top: 2px; }
+    td.num { text-align: right; font-size: 13px; }
+    td.num.accent { color: var(--green); font-weight: 600; }
+    .foot {
+      margin-top: 56px;
+      font-size: 11px;
+      color: var(--mute);
+      letter-spacing: 0.04em;
+      line-height: 1.6;
+    }
+    .foot a { color: var(--graphite); }
+    @media (max-width: 720px) {
+      h1 { font-size: 36px; }
+      .stats { grid-template-columns: 1fr; }
+      .card { padding: 24px 20px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <span class="chip">MOMENTUM POWER&nbsp;&nbsp;|&nbsp;&nbsp;2026-05-07</span>
+    <h1>Top 10 momentum names this week.</h1>
+    <p class="lede">
+      Stage 2 trend-template survivors, ranked by composite IBD-style relative
+      strength, 52-week-high proximity, and one-year return. Local-currency
+      returns. S&amp;P 500 + FTSE 100 universe.
+    </p>
+
+    <hr/>
+
+    <div class="stats">
+      <div class="stat"><div class="num">137</div><div class="lbl">STAGE 2 SURVIVORS</div></div>
+      <div class="stat"><div class="num">601</div><div class="lbl">UNIVERSE SCANNED</div></div>
+      <div class="stat accent"><div class="num">22.8%</div><div class="lbl">SURVIVOR RATE</div></div>
+    </div>
+
+    <div class="card">
+      <h2>The list</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>RANK</th>
+            <th>NAME</th>
+            <th class="right">RS</th>
+            <th class="right">52wH dist</th>
+            <th class="right">1Y</th>
+            <th class="right">COMPOSITE</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="rank">01</td>
+            <td class="ticker">
+              <a href="charts/SNDK.png">
+                <span class="tk">SNDK</span>
+                <span class="tk-meta">🇺🇸 Sandisk · Information Technology</span>
+              </a>
+            </td>
+            <td class="num">99</td>
+            <td class="num">0.0%</td>
+            <td class="num accent">+4068%</td>
+            <td class="num">0.937</td>
+          </tr>
+        
+
+          <tr>
+            <td class="rank">02</td>
+            <td class="ticker">
+              <a href="charts/WDC.png">
+                <span class="tk">WDC</span>
+                <span class="tk-meta">🇺🇸 Western Digital · Information Technology</span>
+              </a>
+            </td>
+            <td class="num">99</td>
+            <td class="num">0.0%</td>
+            <td class="num accent">+996%</td>
+            <td class="num">0.927</td>
+          </tr>
+        
+
+          <tr>
+            <td class="rank">03</td>
+            <td class="ticker">
+              <a href="charts/STX.png">
+                <span class="tk">STX</span>
+                <span class="tk-meta">🇺🇸 Seagate Technology · Information Technology</span>
+              </a>
+            </td>
+            <td class="num">98</td>
+            <td class="num">0.0%</td>
+            <td class="num accent">+748%</td>
+            <td class="num">0.917</td>
+          </tr>
+        
+
+          <tr>
+            <td class="rank">04</td>
+            <td class="ticker">
+              <a href="charts/MU.png">
+                <span class="tk">MU</span>
+                <span class="tk-meta">🇺🇸 Micron Technology · Information Technology</span>
+              </a>
+            </td>
+            <td class="num">98</td>
+            <td class="num">0.0%</td>
+            <td class="num accent">+730%</td>
+            <td class="num">0.917</td>
+          </tr>
+        
+
+          <tr>
+            <td class="rank">05</td>
+            <td class="ticker">
+              <a href="charts/CIEN.png">
+                <span class="tk">CIEN</span>
+                <span class="tk-meta">🇺🇸 Ciena · Information Technology</span>
+              </a>
+            </td>
+            <td class="num">98</td>
+            <td class="num">0.0%</td>
+            <td class="num accent">+694%</td>
+            <td class="num">0.917</td>
+          </tr>
+        
+
+          <tr>
+            <td class="rank">06</td>
+            <td class="ticker">
+              <a href="charts/INTC.png">
+                <span class="tk">INTC</span>
+                <span class="tk-meta">🇺🇸 Intel · Information Technology</span>
+              </a>
+            </td>
+            <td class="num">98</td>
+            <td class="num">0.0%</td>
+            <td class="num accent">+467%</td>
+            <td class="num">0.908</td>
+          </tr>
+        
+
+          <tr>
+            <td class="rank">07</td>
+            <td class="ticker">
+              <a href="charts/FIX.png">
+                <span class="tk">FIX</span>
+                <span class="tk-meta">🇺🇸 Comfort Systems USA · Industrials</span>
+              </a>
+            </td>
+            <td class="num">97</td>
+            <td class="num">0.0%</td>
+            <td class="num accent">+370%</td>
+            <td class="num">0.888</td>
+          </tr>
+        
+
+          <tr>
+            <td class="rank">08</td>
+            <td class="ticker">
+              <a href="charts/AMD.png">
+                <span class="tk">AMD</span>
+                <span class="tk-meta">🇺🇸 Advanced Micro Devices · Information Technology</span>
+              </a>
+            </td>
+            <td class="num">97</td>
+            <td class="num">0.0%</td>
+            <td class="num accent">+327%</td>
+            <td class="num">0.883</td>
+          </tr>
+        
+
+          <tr>
+            <td class="rank">09</td>
+            <td class="ticker">
+              <a href="charts/GLW.png">
+                <span class="tk">GLW</span>
+                <span class="tk-meta">🇺🇸 Corning Inc. · Information Technology</span>
+              </a>
+            </td>
+            <td class="num">97</td>
+            <td class="num">0.0%</td>
+            <td class="num accent">+312%</td>
+            <td class="num">0.876</td>
+          </tr>
+        
+
+          <tr>
+            <td class="rank">10</td>
+            <td class="ticker">
+              <a href="charts/VRT.png">
+                <span class="tk">VRT</span>
+                <span class="tk-meta">🇺🇸 Vertiv · Industrials</span>
+              </a>
+            </td>
+            <td class="num">97</td>
+            <td class="num">0.0%</td>
+            <td class="num accent">+284%</td>
+            <td class="num">0.873</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="foot">
+      Methodology: Mark Minervini Stage 2 trend-template (8 binary gates) as the
+      filter; composite of IBD-style RS rating + 52-week-high proximity + 1-year
+      return as the ranker. Independent computation, yfinance data, no third-party
+      feeds. Snapshot history at <a href="history.json">history.json</a>.
+    </div>
+  </div>
+</body>
+</html>
