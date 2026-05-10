@@ -157,6 +157,201 @@
     td.spark { color: var(--graphite); width: 100px; }
     td.spark svg { display: block; }
 
+    /* Component-colour palette (RS / prox / 1y) — shared across tables + Method tab */
+    .comp-rs   { color: #C8923D; }
+    .comp-prox { color: #6E8FC6; }
+    .comp-1y   { color: #7CA678; }
+    .card .comp-rs   { color: #E4B36C; }
+    .card .comp-prox { color: #9BB6E0; }
+    .card .comp-1y   { color: #A8CFA3; }
+    td.composite { font-weight: 600; }
+
+    .card-sub {
+      font-size: 12px;
+      color: var(--mute);
+      letter-spacing: 0.02em;
+      margin: -12px 0 24px;
+      max-width: 720px;
+      line-height: 1.55;
+    }
+    .card-sub .tag {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      background: rgba(255,255,255,0.06);
+      color: var(--bone);
+      font-size: 9px;
+      letter-spacing: 0.14em;
+      margin: 0 2px;
+    }
+    thead th.group { border-bottom: 1px solid var(--hairline-dk); text-align: right; padding-bottom: 4px; color: var(--mute); font-weight: 500; }
+    thead th.sub { font-size: 9px; font-weight: 400; padding-top: 4px; }
+    .table-wrap { overflow-x: auto; }
+
+    /* Method tab */
+    .method-card { padding: 40px 32px 48px; }
+    .pipeline {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      padding: 20px 0 36px;
+      border-bottom: 1px solid var(--hairline-lt);
+      margin-bottom: 36px;
+      color: var(--ink);
+      font-size: 13px;
+      line-height: 1.4;
+    }
+    .pipeline .step {
+      padding: 12px 16px;
+      border: 1px solid var(--hairline-lt);
+      border-radius: 12px;
+      background: var(--stage);
+    }
+    .pipeline .step.gold { border-color: #C8923D; background: rgba(200,146,61,0.08); }
+    .pipeline .arrow { color: var(--mute); font-size: 18px; }
+    .pipeline .muted { font-size: 11px; }
+
+    .formula-stage { padding-top: 8px; }
+    .formula {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+      font-family: "Inter", serif;
+      font-size: 34px;
+      letter-spacing: -0.01em;
+      padding: 32px 8px 12px;
+      color: var(--ink);
+    }
+    .formula .lhs { font-weight: 500; }
+    .formula .eq { color: var(--mute); font-weight: 300; }
+    .formula .frac {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      vertical-align: middle;
+    }
+    .formula .numer {
+      display: flex;
+      gap: 14px;
+      align-items: center;
+      padding: 0 24px 10px;
+      border-bottom: 2px solid var(--ink);
+    }
+    .formula .denom { padding-top: 10px; font-weight: 500; }
+    .formula .plus { color: var(--mute); font-weight: 300; }
+    .formula .term {
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 8px;
+      transition: background 120ms ease;
+    }
+    .formula .term:hover, .formula .term.active { background: rgba(0,0,0,0.06); }
+    .formula .term-rs   { color: #C8923D; }
+    .formula .term-prox { color: #6E8FC6; }
+    .formula .term-1y   { color: #7CA678; }
+    .formula sub, .formula sup { font-size: 0.55em; font-weight: 400; }
+
+    .braces {
+      display: block;
+      width: 100%;
+      max-width: 720px;
+      margin: 0 auto 16px;
+      height: 56px;
+    }
+    .brace {
+      fill: none;
+      stroke-width: 1.4;
+      stroke-linecap: round;
+    }
+    .brace-rs   { stroke: #C8923D; }
+    .brace-prox { stroke: #6E8FC6; }
+    .brace-1y   { stroke: #7CA678; }
+
+    .term-cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-bottom: 32px;
+    }
+    .term-card {
+      border: 1px solid var(--hairline-lt);
+      border-radius: 16px;
+      padding: 22px 20px;
+      background: var(--stage);
+      transition: transform 120ms ease, border-color 120ms ease;
+    }
+    .term-card.dim { opacity: 0.35; }
+    .term-card.term-rs   { border-top: 3px solid #C8923D; }
+    .term-card.term-prox { border-top: 3px solid #6E8FC6; }
+    .term-card.term-1y   { border-top: 3px solid #7CA678; }
+    .term-card .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+    .term-card.term-rs   .badge { background: #C8923D; color: var(--bone); }
+    .term-card.term-prox .badge { background: #6E8FC6; color: var(--bone); }
+    .term-card.term-1y   .badge { background: #7CA678; color: var(--bone); }
+    .term-card h3 {
+      font-size: 14px;
+      font-weight: 600;
+      margin: 0 0 12px;
+      color: var(--ink);
+      letter-spacing: -0.005em;
+    }
+    .term-card ol { padding-left: 18px; margin: 0 0 10px; font-size: 13px; color: var(--graphite); line-height: 1.55; }
+    .term-card li { margin-bottom: 6px; }
+    .term-card code {
+      font-family: ui-monospace, "SFMono-Regular", Menlo, monospace;
+      font-size: 12px;
+      background: rgba(0,0,0,0.04);
+      padding: 1px 5px;
+      border-radius: 3px;
+    }
+    .term-card .why {
+      font-size: 12px;
+      color: var(--mute);
+      font-style: italic;
+      margin: 8px 0 0;
+      line-height: 1.5;
+    }
+
+    .why-block {
+      background: var(--ink);
+      color: var(--bone);
+      border-radius: 16px;
+      padding: 24px 28px;
+    }
+    .why-block h3 {
+      font-size: 14px;
+      font-weight: 600;
+      margin: 0 0 10px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--bone);
+    }
+    .why-block p { font-size: 13px; line-height: 1.65; color: rgba(245,243,238,0.85); margin: 0 0 12px; }
+    .why-block code {
+      font-family: ui-monospace, "SFMono-Regular", Menlo, monospace;
+      background: rgba(255,255,255,0.08);
+      padding: 1px 6px;
+      border-radius: 3px;
+      font-size: 12px;
+      color: var(--bone);
+    }
+
+    @media (max-width: 720px) {
+      .formula { font-size: 22px; gap: 10px; }
+      .term-cards { grid-template-columns: 1fr; }
+      .braces { height: 38px; }
+    }
+
     /* Breadth chart */
     .chart-wrap {
       background: var(--stage);
@@ -227,21 +422,35 @@
       <button class="tab-btn" data-tab="watchlist">Watchlist</button>
       <button class="tab-btn" data-tab="persistence">Persistence</button>
       <button class="tab-btn" data-tab="breadth">Breadth</button>
+      <button class="tab-btn" data-tab="method">Method</button>
     </div>
 
     <div class="tab-panel active" data-panel="list">
       
     <div class="card">
       <h2>The list</h2>
+      <div class="card-sub">
+        RS, 52wH dist and 1Y are the raw inputs. The three columns under
+        <span class="tag">COMPONENTS</span> are within-survivors percentile ranks (0-100)
+        feeding the composite — that's why a phenomenal 1Y return can still rank low if its
+        proximity-to-high or RS percentile lag the pool. See the <em>Method</em> tab.
+      </div>
+      <div class="table-wrap">
       <table>
         <thead>
           <tr>
-            <th>RANK</th>
-            <th>NAME</th>
-            <th class="right">RS</th>
-            <th class="right">52wH dist</th>
-            <th class="right">1Y</th>
-            <th class="right">COMPOSITE</th>
+            <th rowspan="2">RANK</th>
+            <th rowspan="2">NAME</th>
+            <th class="right" rowspan="2">RS</th>
+            <th class="right" rowspan="2">52wH dist</th>
+            <th class="right" rowspan="2">1Y</th>
+            <th class="right group" colspan="3">COMPONENTS (percentile)</th>
+            <th class="right" rowspan="2">COMPOSITE</th>
+          </tr>
+          <tr>
+            <th class="right sub">RS rk</th>
+            <th class="right sub">Prox rk</th>
+            <th class="right sub">1Y rk</th>
           </tr>
         </thead>
         <tbody>
@@ -256,7 +465,10 @@
             <td class="num">99</td>
             <td class="num">0.0%</td>
             <td class="num accent">+4368%</td>
-            <td class="num">0.977</td>
+            <td class="num comp-rs">—</td>
+            <td class="num comp-prox">—</td>
+            <td class="num comp-1y">—</td>
+            <td class="num composite">0.977</td>
           </tr>
         
 
@@ -271,7 +483,10 @@
             <td class="num">98</td>
             <td class="num">0.0%</td>
             <td class="num accent">+806%</td>
-            <td class="num">0.961</td>
+            <td class="num comp-rs">—</td>
+            <td class="num comp-prox">—</td>
+            <td class="num comp-1y">—</td>
+            <td class="num composite">0.961</td>
           </tr>
         
 
@@ -286,7 +501,10 @@
             <td class="num">98</td>
             <td class="num">0.0%</td>
             <td class="num accent">+515%</td>
-            <td class="num">0.951</td>
+            <td class="num comp-rs">—</td>
+            <td class="num comp-prox">—</td>
+            <td class="num comp-1y">—</td>
+            <td class="num composite">0.951</td>
           </tr>
         
 
@@ -301,7 +519,10 @@
             <td class="num">98</td>
             <td class="num">0.0%</td>
             <td class="num accent">+354%</td>
-            <td class="num">0.930</td>
+            <td class="num comp-rs">—</td>
+            <td class="num comp-prox">—</td>
+            <td class="num comp-1y">—</td>
+            <td class="num composite">0.930</td>
           </tr>
         
 
@@ -316,7 +537,10 @@
             <td class="num">97</td>
             <td class="num">0.0%</td>
             <td class="num accent">+323%</td>
-            <td class="num">0.915</td>
+            <td class="num comp-rs">—</td>
+            <td class="num comp-prox">—</td>
+            <td class="num comp-1y">—</td>
+            <td class="num composite">0.915</td>
           </tr>
         
 
@@ -331,7 +555,10 @@
             <td class="num">98</td>
             <td class="num">0.5%</td>
             <td class="num accent">+731%</td>
-            <td class="num">0.912</td>
+            <td class="num comp-rs">—</td>
+            <td class="num comp-prox">—</td>
+            <td class="num comp-1y">—</td>
+            <td class="num composite">0.912</td>
           </tr>
         
 
@@ -346,7 +573,10 @@
             <td class="num">99</td>
             <td class="num">0.7%</td>
             <td class="num accent">+988%</td>
-            <td class="num">0.910</td>
+            <td class="num comp-rs">—</td>
+            <td class="num comp-prox">—</td>
+            <td class="num comp-1y">—</td>
+            <td class="num composite">0.910</td>
           </tr>
         
 
@@ -361,7 +591,10 @@
             <td class="num">96</td>
             <td class="num">0.0%</td>
             <td class="num accent">+176%</td>
-            <td class="num">0.886</td>
+            <td class="num comp-rs">—</td>
+            <td class="num comp-prox">—</td>
+            <td class="num comp-1y">—</td>
+            <td class="num composite">0.886</td>
           </tr>
         
 
@@ -376,7 +609,10 @@
             <td class="num">96</td>
             <td class="num">0.0%</td>
             <td class="num accent">+182%</td>
-            <td class="num">0.884</td>
+            <td class="num comp-rs">—</td>
+            <td class="num comp-prox">—</td>
+            <td class="num comp-1y">—</td>
+            <td class="num composite">0.884</td>
           </tr>
         
 
@@ -391,10 +627,14 @@
             <td class="num">94</td>
             <td class="num">0.0%</td>
             <td class="num accent">+161%</td>
-            <td class="num">0.848</td>
+            <td class="num comp-rs">—</td>
+            <td class="num comp-prox">—</td>
+            <td class="num comp-1y">—</td>
+            <td class="num composite">0.848</td>
           </tr>
         </tbody>
       </table>
+      </div>
     </div>
     
     </div>
@@ -423,6 +663,9 @@
             <th class="right" data-key="rs_rating">RS</th>
             <th class="right" data-key="dist_from_high">52wH DIST</th>
             <th class="right" data-key="return_12m">1Y</th>
+            <th class="right" data-key="rank_rs">RS RK</th>
+            <th class="right" data-key="rank_prox">PROX RK</th>
+            <th class="right" data-key="rank_1yr">1Y RK</th>
             <th class="right" data-key="composite">COMPOSITE</th>
           </tr>
         </thead>
@@ -614,6 +857,99 @@
     </div>
     
     </div>
+    <div class="tab-panel" data-panel="method">
+      
+    <div class="lightcard method-card">
+      <h2>How the composite score is calculated</h2>
+      <div class="sub">
+        Every Stage&nbsp;2 survivor each week is scored by a single number — the composite.
+        It's the equal-weight mean of three within-pool percentile ranks. Click a term to
+        highlight what it pulls in.
+      </div>
+
+      <div class="pipeline">
+        <span class="step">Universe<br><span class="muted">S&amp;P 500 + FTSE 100 (~601 names)</span></span>
+        <span class="arrow">&rarr;</span>
+        <span class="step">Stage 2 gate<br><span class="muted">8 binary Minervini tests, all must pass</span></span>
+        <span class="arrow">&rarr;</span>
+        <span class="step">Survivor pool<br><span class="muted">~120-140 names this week</span></span>
+        <span class="arrow">&rarr;</span>
+        <span class="step gold">Composite rank<br><span class="muted">the equation below</span></span>
+      </div>
+
+      <div class="formula-stage">
+        <div class="formula">
+          <span class="lhs">composite<sub>i</sub></span>
+          <span class="eq">=</span>
+          <div class="frac">
+            <div class="numer">
+              <span class="term term-rs" data-term="rs">rank<sub>RS</sub><sup>(i)</sup></span>
+              <span class="plus">+</span>
+              <span class="term term-prox" data-term="prox">rank<sub>prox</sub><sup>(i)</sup></span>
+              <span class="plus">+</span>
+              <span class="term term-1y" data-term="1y">rank<sub>1y</sub><sup>(i)</sup></span>
+            </div>
+            <div class="denom">3</div>
+          </div>
+        </div>
+
+        <svg class="braces" viewBox="0 0 720 70" preserveAspectRatio="none" aria-hidden="true">
+          <path d="M  40 4 Q  40 28 100 28 Q 160 28 160 50" class="brace brace-rs"/>
+          <path d="M 270 4 Q 270 28 330 28 Q 390 28 390 50" class="brace brace-prox"/>
+          <path d="M 500 4 Q 500 28 560 28 Q 620 28 620 50" class="brace brace-1y"/>
+        </svg>
+
+        <div class="term-cards">
+          <div class="term-card term-rs" data-term="rs">
+            <span class="badge">RS<sub>rk</sub></span>
+            <h3>IBD-style Relative Strength percentile</h3>
+            <ol>
+              <li>For every name in the full universe, compute a weighted blend of 3m, 6m, 9m, 12m total returns: weights <code>2&middot;r<sub>3</sub> + r<sub>6</sub> + r<sub>9</sub> + r<sub>12</sub></code>. Front-loads the recent quarter.</li>
+              <li>Rank that blend across the universe, scale to 1-99. That's the raw <em>RS rating</em> column.</li>
+              <li>Then take the percentile <strong>within the survivor pool</strong> only. That percentile (0-1) is what enters the composite.</li>
+            </ol>
+            <p class="why">Captures multi-horizon momentum strength.</p>
+          </div>
+
+          <div class="term-card term-prox" data-term="prox">
+            <span class="badge">prox<sub>rk</sub></span>
+            <h3>52-week-high proximity percentile</h3>
+            <ol>
+              <li>Distance from 52-week high: <code>(high<sub>52w</sub> &minus; price) / high<sub>52w</sub></code>. Lower number = closer to high.</li>
+              <li>Within the survivor pool, rank by <em>negative</em> distance &mdash; so closer-to-high gets a higher percentile.</li>
+            </ol>
+            <p class="why">Distinguishes mature breakouts from over-extended runs. A name at the very high gets ~1.0 here; one already 25% off ATH gets penalised.</p>
+          </div>
+
+          <div class="term-card term-1y" data-term="1y">
+            <span class="badge">1y<sub>rk</sub></span>
+            <h3>One-year return percentile</h3>
+            <ol>
+              <li>Total return over the trailing 252 trading days, local currency.</li>
+              <li>Rank within the survivor pool, take the percentile.</li>
+            </ol>
+            <p class="why">Anchors the score in actual capital gain magnitude. A name up 80% over a year out-ranks one up 35%, all else equal &mdash; but only at the margin, because RS already captures a lot of this.</p>
+          </div>
+        </div>
+
+        <div class="why-block">
+          <h3>Why phenomenal 1Y returns can rank lower</h3>
+          <p>
+            The three components are equal-weighted. A name with a stellar 1Y return but extended (high <em>dist-from-high</em>) or with mediocre 3-9m strength will see its <em>prox<sub>rk</sub></em> and <em>RS<sub>rk</sub></em> sit in the middle of the pool. Average those three and the composite lands lower than its 1Y headline suggests.
+          </p>
+          <p>
+            Concretely &mdash; a Stage 2 survivor up 110% over the year but already 22% off ATH might score:
+            <code>RS<sub>rk</sub> = 0.55</code>, <code>prox<sub>rk</sub> = 0.20</code>, <code>1y<sub>rk</sub> = 0.90</code> &rarr; composite <code>0.55</code>. A boring "only" +28% name pinned to its high might score
+            <code>0.60 / 0.95 / 0.30</code> &rarr; composite <code>0.62</code> and rank above it.
+          </p>
+          <p>
+            This is by design. The scanner is hunting <strong>persistent momentum still in trend</strong>, not the year's biggest gainers regardless of where they are now.
+          </p>
+        </div>
+      </div>
+    </div>
+    
+    </div>
 
     <div class="foot">
       Filter: Mark Minervini Stage 2 trend-template (8 binary gates).
@@ -646,6 +982,26 @@
       const btn = document.querySelector('.tab-btn[data-tab="' + hash + '"]');
       if (btn) btn.click();
     }
+
+    // Method tab: click a term to dim the others
+    document.querySelectorAll('.formula .term').forEach(t => {
+      t.addEventListener('click', () => {
+        const target = t.dataset.term;
+        const isActive = t.classList.contains('active');
+        document.querySelectorAll('.formula .term').forEach(x => x.classList.remove('active'));
+        document.querySelectorAll('.term-card').forEach(c => c.classList.remove('dim'));
+        document.querySelectorAll('.brace').forEach(b => b.style.opacity = '1');
+        if (!isActive) {
+          t.classList.add('active');
+          document.querySelectorAll('.term-card').forEach(c => {
+            if (!c.classList.contains('term-' + target)) c.classList.add('dim');
+          });
+          document.querySelectorAll('.brace').forEach(b => {
+            if (!b.classList.contains('brace-' + target)) b.style.opacity = '0.18';
+          });
+        }
+      });
+    });
 
     // Watchlist sort + filter
     (function() {
@@ -696,6 +1052,7 @@
           const ret = (r.return_12m*100);
           const retCls = ret >= 0 ? 'num accent' : 'num';
           const retStr = (ret>=0?'+':'') + ret.toFixed(0) + '%';
+          const pctRk = v => (v == null) ? '—' : Math.round(v*100);
           return '<tr>' +
             '<td class="rank">' + r.rank_overall + '</td>' +
             '<td class="ticker"><span class="tk">' + r.ticker + '</span></td>' +
@@ -705,7 +1062,10 @@
             '<td class="num">' + fmtInt(r.rs_rating) + '</td>' +
             '<td class="num">' + fmtPct(r.dist_from_high) + '</td>' +
             '<td class="' + retCls + '">' + retStr + '</td>' +
-            '<td class="num">' + fmtNum3(r.composite) + '</td>' +
+            '<td class="num comp-rs">' + pctRk(r.rank_rs) + '</td>' +
+            '<td class="num comp-prox">' + pctRk(r.rank_prox) + '</td>' +
+            '<td class="num comp-1y">' + pctRk(r.rank_1yr) + '</td>' +
+            '<td class="num composite">' + fmtNum3(r.composite) + '</td>' +
           '</tr>';
         }).join('');
       }

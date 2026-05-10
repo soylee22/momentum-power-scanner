@@ -146,7 +146,8 @@ def run(asof: dt.date | None = None, top_n: int = 10) -> dict:
     snapshot_cols = [
         "rank_overall", "ticker", "name", "sector", "country", "index",
         "price", "rs_rating", "dist_from_high",
-        "return_3m", "return_6m", "return_12m", "composite",
+        "return_3m", "return_6m", "return_12m",
+        "rank_rs", "rank_prox", "rank_1yr", "composite",
     ]
     # Persist the FULL ranked survivor pool, not just the top 10. The top 10
     # is the headline; the deeper list (ranks 11 to ~survivors_count) is the
