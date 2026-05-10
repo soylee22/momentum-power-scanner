@@ -991,7 +991,9 @@ def render_dashboard() -> Path:
       Ranker: composite of IBD-style RS rating + 52-week-high proximity + 1-year
       return. Independent computation, yfinance data, no third-party feeds.
       <br/><br/>
-      <a href="methodology.html">Read the full methodology &rarr;</a>
+      <a href="backtest.html">Backtest results &rarr;</a>
+      &nbsp;&nbsp;|&nbsp;&nbsp;
+      <a href="methodology.html">Full methodology</a>
       &nbsp;&nbsp;|&nbsp;&nbsp;
       <a href="history.json">Snapshot history (JSON)</a>
       &nbsp;&nbsp;|&nbsp;&nbsp;
