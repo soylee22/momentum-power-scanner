@@ -26,6 +26,120 @@ def _load_snapshots() -> list[dict]:
     return [json.loads(p.read_text()) for p in snaps]
 
 
+def _watchlist_html(watchlist_json: str, survivors: int) -> str:
+    return f"""
+    <div class="watchlist" id="watchlist">
+      <h2>Watchlist · ranks 11 to {survivors}</h2>
+      <div class="sub">All Stage 2 survivors beyond the top 10. Sortable, filterable. Click a column header to sort.</div>
+      <div class="controls">
+        <input type="search" id="wl-search" placeholder="Filter by ticker, name, sector...">
+        <select id="wl-index">
+          <option value="">All indices</option>
+          <option value="S&amp;P 500">S&amp;P 500</option>
+          <option value="FTSE 100">FTSE 100</option>
+        </select>
+        <select id="wl-sector"><option value="">All sectors</option></select>
+      </div>
+      <table id="wl-table">
+        <thead>
+          <tr>
+            <th data-key="rank_overall" data-dir="asc" class="sorted asc">#</th>
+            <th data-key="ticker">TICKER</th>
+            <th data-key="name">NAME</th>
+            <th data-key="sector">SECTOR</th>
+            <th data-key="index">IDX</th>
+            <th class="right" data-key="rs_rating">RS</th>
+            <th class="right" data-key="dist_from_high">52wH DIST</th>
+            <th class="right" data-key="return_12m">1Y</th>
+            <th class="right" data-key="composite">COMPOSITE</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <div class="empty" id="wl-empty" style="display:none;">No matches.</div>
+    </div>
+
+    <script>
+      const WL_DATA = {watchlist_json};
+      const tbody = document.querySelector('#wl-table tbody');
+      const searchEl = document.getElementById('wl-search');
+      const indexEl = document.getElementById('wl-index');
+      const sectorEl = document.getElementById('wl-sector');
+      const emptyEl = document.getElementById('wl-empty');
+      const headers = document.querySelectorAll('#wl-table thead th[data-key]');
+      let sortKey = 'rank_overall';
+      let sortDir = 'asc';
+
+      const sectors = [...new Set(WL_DATA.map(r => r.sector).filter(Boolean))].sort();
+      for (const s of sectors) {{
+        const opt = document.createElement('option');
+        opt.value = s; opt.textContent = s;
+        sectorEl.appendChild(opt);
+      }}
+
+      function fmtPct(x) {{ return (x*100).toFixed(1) + '%'; }}
+      function fmtNum3(x) {{ return Number(x).toFixed(3); }}
+      function fmtInt(x) {{ return Math.round(x).toString(); }}
+
+      function render() {{
+        const q = searchEl.value.trim().toLowerCase();
+        const idx = indexEl.value;
+        const sec = sectorEl.value;
+        let rows = WL_DATA.filter(r => {{
+          if (idx && r.index !== idx) return false;
+          if (sec && r.sector !== sec) return false;
+          if (!q) return true;
+          const hay = (r.ticker + ' ' + (r.name||'') + ' ' + (r.sector||'')).toLowerCase();
+          return hay.includes(q);
+        }});
+        rows.sort((a,b) => {{
+          let va = a[sortKey], vb = b[sortKey];
+          if (typeof va === 'string') {{ va = va.toLowerCase(); vb = (vb||'').toLowerCase(); }}
+          if (va < vb) return sortDir === 'asc' ? -1 : 1;
+          if (va > vb) return sortDir === 'asc' ? 1 : -1;
+          return 0;
+        }});
+        emptyEl.style.display = rows.length ? 'none' : 'block';
+        tbody.innerHTML = rows.map(r => {{
+          const flag = r.index === 'S&P 500' ? '🇺🇸' : '🇬🇧';
+          const ret = (r.return_12m*100);
+          const retCls = ret >= 0 ? 'num accent' : 'num';
+          const retStr = (ret>=0?'+':'') + ret.toFixed(0) + '%';
+          return `
+            <tr>
+              <td class="rank">${{r.rank_overall}}</td>
+              <td class="ticker"><span class="tk">${{r.ticker}}</span></td>
+              <td>${{r.name||''}}</td>
+              <td>${{r.sector||''}}</td>
+              <td>${{flag}}</td>
+              <td class="num">${{fmtInt(r.rs_rating)}}</td>
+              <td class="num">${{fmtPct(r.dist_from_high)}}</td>
+              <td class="${{retCls}}">${{retStr}}</td>
+              <td class="num">${{fmtNum3(r.composite)}}</td>
+            </tr>`;
+        }}).join('');
+      }}
+
+      headers.forEach(h => h.addEventListener('click', () => {{
+        const key = h.dataset.key;
+        if (sortKey === key) {{
+          sortDir = sortDir === 'asc' ? 'desc' : 'asc';
+        }} else {{
+          sortKey = key;
+          sortDir = ['rank_overall','ticker','name','sector','index'].includes(key) ? 'asc' : 'desc';
+        }}
+        headers.forEach(x => x.classList.remove('sorted','asc'));
+        h.classList.add('sorted');
+        if (sortDir === 'asc') h.classList.add('asc');
+        render();
+      }}));
+
+      [searchEl, indexEl, sectorEl].forEach(el => el.addEventListener('input', render));
+      render();
+    </script>
+"""
+
+
 def render_dashboard() -> Path:
     snaps = _load_snapshots()
     if not snaps:
@@ -67,6 +181,15 @@ def render_dashboard() -> Path:
     universe = latest["universe_size"]
     survivors = latest["survivor_count"]
     rate = (survivors / universe * 100) if universe else 0.0
+
+    # Deeper survivor list (ranks 11+). Older snapshots without 'survivors'
+    # gracefully degrade — the card simply doesn't render.
+    survivors_full = latest.get("survivors") or []
+    watchlist = [r for r in survivors_full if int(r.get("rank_overall", 0)) > 10]
+    watchlist_json = json.dumps(watchlist, default=float)
+    watchlist_section = ""
+    if watchlist:
+        watchlist_section = _watchlist_html(watchlist_json, survivors)
 
     html = f"""<!DOCTYPE html>
 <html lang="en">
@@ -183,6 +306,64 @@ def render_dashboard() -> Path:
     td.ticker .tk-meta {{ display: block; color: var(--mute); font-size: 11px; margin-top: 2px; }}
     td.num {{ text-align: right; font-size: 13px; }}
     td.num.accent {{ color: var(--green); font-weight: 600; }}
+    .watchlist {{
+      background: var(--bone);
+      color: var(--ink);
+      border: 1px solid var(--hairline-lt);
+      border-radius: 28px;
+      padding: 36px 32px;
+      margin-top: 32px;
+    }}
+    .watchlist h2 {{
+      font-size: 24px;
+      font-weight: 500;
+      letter-spacing: -0.005em;
+      margin: 0 0 8px;
+    }}
+    .watchlist .sub {{
+      font-size: 12px;
+      color: var(--mute);
+      letter-spacing: 0.04em;
+      margin-bottom: 24px;
+    }}
+    .controls {{
+      display: flex;
+      gap: 12px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }}
+    .controls input, .controls select {{
+      font-family: inherit;
+      font-size: 13px;
+      padding: 8px 12px;
+      border: 1px solid var(--hairline-lt);
+      border-radius: 999px;
+      background: var(--stage);
+      color: var(--ink);
+    }}
+    .controls input {{ min-width: 220px; flex: 1; }}
+    .watchlist thead th {{
+      color: var(--mute);
+      border-bottom: 1px solid var(--hairline-lt);
+      cursor: pointer;
+      user-select: none;
+    }}
+    .watchlist thead th.sorted::after {{ content: " \\25BE"; color: var(--graphite); }}
+    .watchlist thead th.sorted.asc::after {{ content: " \\25B4"; }}
+    .watchlist tbody td {{
+      border-bottom: 1px solid var(--hairline-lt);
+      color: var(--ink);
+    }}
+    .watchlist td.rank {{ color: var(--mute); }}
+    .watchlist td.ticker .tk {{ color: var(--ink); font-weight: 600; }}
+    .watchlist td.ticker .tk-meta {{ color: var(--mute); }}
+    .watchlist td.num.accent {{ color: var(--green); }}
+    .empty {{
+      padding: 24px;
+      text-align: center;
+      color: var(--mute);
+      font-size: 13px;
+    }}
     .foot {{
       margin-top: 56px;
       font-size: 11px;
@@ -232,6 +413,8 @@ def render_dashboard() -> Path:
         <tbody>{rows}</tbody>
       </table>
     </div>
+
+    {watchlist_section}
 
     <div class="foot">
       Filter: Mark Minervini Stage 2 trend-template (8 binary gates).

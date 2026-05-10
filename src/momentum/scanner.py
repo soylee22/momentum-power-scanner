@@ -143,17 +143,24 @@ def run(asof: dt.date | None = None, top_n: int = 10) -> dict:
         top.to_csv(OUTPUTS / "latest.csv", index=False)
         _write_markdown(top, OUTPUTS / "latest.md", asof)
 
+    snapshot_cols = [
+        "rank_overall", "ticker", "name", "sector", "country", "index",
+        "price", "rs_rating", "dist_from_high",
+        "return_3m", "return_6m", "return_12m", "composite",
+    ]
+    # Persist the FULL ranked survivor pool, not just the top 10. The top 10
+    # is the headline; the deeper list (ranks 11 to ~survivors_count) is the
+    # near-miss watchlist and gets surfaced on the dashboard for filtering.
     snapshot = {
         "asof": asof.isoformat(),
         "universe_size": int(len(df)),
         "survivor_count": int(len(survivors)),
         "top10": top[
-            [
-                "rank_overall", "ticker", "name", "sector", "country", "index",
-                "price", "rs_rating", "dist_from_high",
-                "return_12m", "composite",
-            ]
+            [c for c in snapshot_cols if c not in ("return_3m", "return_6m")]
         ].to_dict(orient="records") if not top.empty else [],
+        "survivors": ranked[
+            [c for c in snapshot_cols if c in ranked.columns]
+        ].to_dict(orient="records") if not ranked.empty else [],
     }
     snap_path = HISTORY_DIR / f"{asof.isoformat()}.json"
     snap_path.write_text(json.dumps(snapshot, indent=2, default=float))
