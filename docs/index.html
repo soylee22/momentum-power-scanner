@@ -28,11 +28,7 @@
       line-height: 1.5;
       -webkit-font-smoothing: antialiased;
     }
-    .page {
-      max-width: 1080px;
-      margin: 0 auto;
-      padding: 64px 40px 80px;
-    }
+    .page { max-width: 1080px; margin: 0 auto; padding: 64px 40px 80px; }
     .chip {
       display: inline-block;
       padding: 8px 16px;
@@ -50,12 +46,7 @@
       line-height: 1.05;
       margin: 28px 0 16px;
     }
-    .lede {
-      max-width: 640px;
-      color: #4A4A47;
-      font-size: 16px;
-      line-height: 1.6;
-    }
+    .lede { max-width: 640px; color: #4A4A47; font-size: 16px; line-height: 1.6; }
     hr { border: 0; border-top: 1px solid var(--hairline-lt); margin: 56px 0 36px; }
     .stats {
       display: grid;
@@ -63,32 +54,57 @@
       gap: 32px;
       margin: 24px 0 40px;
     }
-    .stat .num {
-      font-size: 56px;
-      font-weight: 600;
-      letter-spacing: -0.025em;
-      line-height: 1;
-    }
+    .stat .num { font-size: 56px; font-weight: 600; letter-spacing: -0.025em; line-height: 1; }
     .stat.accent .num { color: var(--green); }
-    .stat .lbl {
-      font-size: 10px;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--mute);
-      margin-top: 8px;
+    .stat .lbl { font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--mute); margin-top: 8px; }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 4px;
+      margin: 12px 0 28px;
+      border-bottom: 1px solid var(--hairline-lt);
+      flex-wrap: wrap;
     }
+    .tab-btn {
+      font-family: inherit;
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      font-weight: 500;
+      background: transparent;
+      border: 0;
+      padding: 14px 18px;
+      cursor: pointer;
+      color: var(--mute);
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      transition: color 120ms ease;
+    }
+    .tab-btn:hover { color: var(--graphite); }
+    .tab-btn.active { color: var(--ink); border-bottom-color: var(--ink); }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* Cards */
     .card {
       background: var(--ink);
       color: var(--bone);
       border-radius: 28px;
       padding: 36px 32px;
     }
-    .card h2 {
-      font-size: 24px;
-      font-weight: 500;
-      letter-spacing: -0.005em;
-      margin: 0 0 24px;
+    .card h2 { font-size: 24px; font-weight: 500; letter-spacing: -0.005em; margin: 0 0 24px; }
+    .lightcard {
+      background: var(--bone);
+      color: var(--ink);
+      border: 1px solid var(--hairline-lt);
+      border-radius: 28px;
+      padding: 36px 32px;
     }
+    .lightcard h2 { font-size: 24px; font-weight: 500; letter-spacing: -0.005em; margin: 0 0 8px; }
+    .lightcard .sub { font-size: 12px; color: var(--mute); letter-spacing: 0.02em; margin-bottom: 24px; line-height: 1.5; max-width: 720px; }
+
+    /* Tables */
     table { width: 100%; border-collapse: collapse; }
     thead th {
       text-align: left;
@@ -106,39 +122,26 @@
       border-bottom: 1px solid var(--hairline-dk);
       font-variant-numeric: tabular-nums;
     }
-    td.rank { color: var(--mute); font-size: 12px; width: 36px; }
-    td.ticker a { color: var(--bone); text-decoration: none; display: block; }
-    td.ticker a:hover .tk { color: var(--green); }
-    td.ticker .tk { font-weight: 600; font-size: 14px; }
-    td.ticker .tk-meta { display: block; color: var(--mute); font-size: 11px; margin-top: 2px; }
+    .card td.rank { color: var(--mute); font-size: 12px; width: 36px; }
+    .card td.ticker a { color: var(--bone); text-decoration: none; display: block; }
+    .card td.ticker a:hover .tk { color: var(--green); }
+    .card td.ticker .tk { font-weight: 600; font-size: 14px; }
+    .card td.ticker .tk-meta { display: block; color: var(--mute); font-size: 11px; margin-top: 2px; }
     td.num { text-align: right; font-size: 13px; }
     td.num.accent { color: var(--green); font-weight: 600; }
-    .watchlist {
-      background: var(--bone);
-      color: var(--ink);
-      border: 1px solid var(--hairline-lt);
-      border-radius: 28px;
-      padding: 36px 32px;
-      margin-top: 32px;
-    }
-    .watchlist h2 {
-      font-size: 24px;
-      font-weight: 500;
-      letter-spacing: -0.005em;
-      margin: 0 0 8px;
-    }
-    .watchlist .sub {
-      font-size: 12px;
-      color: var(--mute);
-      letter-spacing: 0.04em;
-      margin-bottom: 24px;
-    }
-    .controls {
-      display: flex;
-      gap: 12px;
-      margin-bottom: 16px;
-      flex-wrap: wrap;
-    }
+    .muted { color: var(--mute); }
+
+    /* Light-card overrides */
+    .lightcard thead th { color: var(--mute); border-bottom: 1px solid var(--hairline-lt); }
+    .lightcard table.interactive thead th { cursor: pointer; user-select: none; }
+    .lightcard table.interactive thead th.sorted::after { content: " \25BE"; color: var(--graphite); }
+    .lightcard table.interactive thead th.sorted.asc::after { content: " \25B4"; }
+    .lightcard tbody td { border-bottom: 1px solid var(--hairline-lt); color: var(--ink); }
+    .lightcard td.ticker .tk { color: var(--ink); font-weight: 600; font-size: 14px; }
+    .lightcard td.num.accent { color: var(--green); }
+
+    /* Watchlist controls */
+    .controls { display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
     .controls input, .controls select {
       font-family: inherit;
       font-size: 13px;
@@ -149,28 +152,43 @@
       color: var(--ink);
     }
     .controls input { min-width: 220px; flex: 1; }
-    .watchlist thead th {
-      color: var(--mute);
-      border-bottom: 1px solid var(--hairline-lt);
-      cursor: pointer;
-      user-select: none;
-    }
-    .watchlist thead th.sorted::after { content: " \25BE"; color: var(--graphite); }
-    .watchlist thead th.sorted.asc::after { content: " \25B4"; }
-    .watchlist tbody td {
-      border-bottom: 1px solid var(--hairline-lt);
+
+    /* Persistence sparklines */
+    td.spark { color: var(--graphite); width: 100px; }
+    td.spark svg { display: block; }
+
+    /* Breadth chart */
+    .chart-wrap {
+      background: var(--stage);
+      border-radius: 16px;
+      padding: 16px;
       color: var(--ink);
+      overflow-x: auto;
     }
-    .watchlist td.rank { color: var(--mute); }
-    .watchlist td.ticker .tk { color: var(--ink); font-weight: 600; }
-    .watchlist td.ticker .tk-meta { color: var(--mute); }
-    .watchlist td.num.accent { color: var(--green); }
-    .empty {
-      padding: 24px;
-      text-align: center;
+    .breadth-meta {
+      display: flex;
+      gap: 48px;
+      margin-top: 24px;
+      flex-wrap: wrap;
+    }
+    .breadth-meta .meta-num {
+      font-size: 32px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      display: block;
+      line-height: 1;
+    }
+    .breadth-meta .meta-lbl {
+      font-size: 10px;
+      letter-spacing: 0.12em;
       color: var(--mute);
-      font-size: 13px;
+      text-transform: uppercase;
+      display: block;
+      margin-top: 6px;
     }
+
+    .empty { padding: 24px; text-align: center; color: var(--mute); font-size: 13px; }
+
     .foot {
       margin-top: 56px;
       font-size: 11px;
@@ -182,7 +200,7 @@
     @media (max-width: 720px) {
       h1 { font-size: 36px; }
       .stats { grid-template-columns: 1fr; }
-      .card { padding: 24px 20px; }
+      .card, .lightcard { padding: 24px 20px; }
     }
   </style>
 </head>
@@ -204,6 +222,15 @@
       <div class="stat accent"><div class="num">22.6%</div><div class="lbl">SURVIVOR RATE</div></div>
     </div>
 
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="list">Top 10</button>
+      <button class="tab-btn" data-tab="watchlist">Watchlist</button>
+      <button class="tab-btn" data-tab="persistence">Persistence</button>
+      <button class="tab-btn" data-tab="breadth">Breadth</button>
+    </div>
+
+    <div class="tab-panel active" data-panel="list">
+      
     <div class="card">
       <h2>The list</h2>
       <table>
@@ -369,8 +396,165 @@
         </tbody>
       </table>
     </div>
-
     
+    </div>
+    <div class="tab-panel" data-panel="watchlist">
+      
+        <div class="lightcard">
+          <h2>Watchlist</h2>
+          <div class="empty">First populated by the next weekly scan.</div>
+        </div>
+        
+    </div>
+    <div class="tab-panel" data-panel="persistence">
+      
+    <div class="lightcard">
+      <h2>Persistence · weeks in top 10</h2>
+      <div class="sub">
+        Every ticker that has reached the top 10 at any weekly scan. Sparkline shows composite score across all appearances. "Now" = current top-10 rank, or "dropped" if not in this week's headline ten.
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>TICKER</th>
+            <th>NAME</th>
+            <th class="right">WEEKS IN T10</th>
+            <th class="right">BEST</th>
+            <th class="right">NOW</th>
+            <th>TRAJECTORY</th>
+            <th class="right">LAST SEEN</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="ticker"><span class="tk">SNDK</span></td>
+            <td>🇺🇸 Sandisk <span class="muted">· Information Technology</span></td>
+            <td class="num accent">1</td>
+            <td class="num">1</td>
+            <td class="num"><span class="num">1</span></td>
+            <td class="spark"><svg width="80" height="24" viewBox="0 0 80 24"><circle cx="40.0" cy="12.0" r="2.5" fill="currentColor"/></svg></td>
+            <td class="num muted">2026-05-07</td>
+          </tr>
+        
+
+          <tr>
+            <td class="ticker"><span class="tk">WDC</span></td>
+            <td>🇺🇸 Western Digital <span class="muted">· Information Technology</span></td>
+            <td class="num accent">1</td>
+            <td class="num">2</td>
+            <td class="num"><span class="num">2</span></td>
+            <td class="spark"><svg width="80" height="24" viewBox="0 0 80 24"><circle cx="40.0" cy="12.0" r="2.5" fill="currentColor"/></svg></td>
+            <td class="num muted">2026-05-07</td>
+          </tr>
+        
+
+          <tr>
+            <td class="ticker"><span class="tk">MU</span></td>
+            <td>🇺🇸 Micron Technology <span class="muted">· Information Technology</span></td>
+            <td class="num accent">1</td>
+            <td class="num">3</td>
+            <td class="num"><span class="num">3</span></td>
+            <td class="spark"><svg width="80" height="24" viewBox="0 0 80 24"><circle cx="40.0" cy="12.0" r="2.5" fill="currentColor"/></svg></td>
+            <td class="num muted">2026-05-07</td>
+          </tr>
+        
+
+          <tr>
+            <td class="ticker"><span class="tk">CIEN</span></td>
+            <td>🇺🇸 Ciena <span class="muted">· Information Technology</span></td>
+            <td class="num accent">1</td>
+            <td class="num">4</td>
+            <td class="num"><span class="num">4</span></td>
+            <td class="spark"><svg width="80" height="24" viewBox="0 0 80 24"><circle cx="40.0" cy="12.0" r="2.5" fill="currentColor"/></svg></td>
+            <td class="num muted">2026-05-07</td>
+          </tr>
+        
+
+          <tr>
+            <td class="ticker"><span class="tk">STX</span></td>
+            <td>🇺🇸 Seagate Technology <span class="muted">· Information Technology</span></td>
+            <td class="num accent">1</td>
+            <td class="num">5</td>
+            <td class="num"><span class="num">5</span></td>
+            <td class="spark"><svg width="80" height="24" viewBox="0 0 80 24"><circle cx="40.0" cy="12.0" r="2.5" fill="currentColor"/></svg></td>
+            <td class="num muted">2026-05-07</td>
+          </tr>
+        
+
+          <tr>
+            <td class="ticker"><span class="tk">INTC</span></td>
+            <td>🇺🇸 Intel <span class="muted">· Information Technology</span></td>
+            <td class="num accent">1</td>
+            <td class="num">6</td>
+            <td class="num"><span class="num">6</span></td>
+            <td class="spark"><svg width="80" height="24" viewBox="0 0 80 24"><circle cx="40.0" cy="12.0" r="2.5" fill="currentColor"/></svg></td>
+            <td class="num muted">2026-05-07</td>
+          </tr>
+        
+
+          <tr>
+            <td class="ticker"><span class="tk">FIX</span></td>
+            <td>🇺🇸 Comfort Systems USA <span class="muted">· Industrials</span></td>
+            <td class="num accent">1</td>
+            <td class="num">7</td>
+            <td class="num"><span class="num">7</span></td>
+            <td class="spark"><svg width="80" height="24" viewBox="0 0 80 24"><circle cx="40.0" cy="12.0" r="2.5" fill="currentColor"/></svg></td>
+            <td class="num muted">2026-05-07</td>
+          </tr>
+        
+
+          <tr>
+            <td class="ticker"><span class="tk">AMD</span></td>
+            <td>🇺🇸 Advanced Micro Devices <span class="muted">· Information Technology</span></td>
+            <td class="num accent">1</td>
+            <td class="num">8</td>
+            <td class="num"><span class="num">8</span></td>
+            <td class="spark"><svg width="80" height="24" viewBox="0 0 80 24"><circle cx="40.0" cy="12.0" r="2.5" fill="currentColor"/></svg></td>
+            <td class="num muted">2026-05-07</td>
+          </tr>
+        
+
+          <tr>
+            <td class="ticker"><span class="tk">GLW</span></td>
+            <td>🇺🇸 Corning Inc. <span class="muted">· Information Technology</span></td>
+            <td class="num accent">1</td>
+            <td class="num">9</td>
+            <td class="num"><span class="num">9</span></td>
+            <td class="spark"><svg width="80" height="24" viewBox="0 0 80 24"><circle cx="40.0" cy="12.0" r="2.5" fill="currentColor"/></svg></td>
+            <td class="num muted">2026-05-07</td>
+          </tr>
+        
+
+          <tr>
+            <td class="ticker"><span class="tk">LRCX</span></td>
+            <td>🇺🇸 Lam Research <span class="muted">· Information Technology</span></td>
+            <td class="num accent">1</td>
+            <td class="num">10</td>
+            <td class="num"><span class="num">10</span></td>
+            <td class="spark"><svg width="80" height="24" viewBox="0 0 80 24"><circle cx="40.0" cy="12.0" r="2.5" fill="currentColor"/></svg></td>
+            <td class="num muted">2026-05-07</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    
+    </div>
+    <div class="tab-panel" data-panel="breadth">
+      
+    <div class="lightcard">
+      <h2>Breadth · Stage 2 survivors over time</h2>
+      <div class="sub">
+        How many of ~601 S&amp;P 500 + FTSE 100 names pass all 8 Minervini gates each week. Rising = healthy trend market with broad participation. Falling = narrowing leadership.
+      </div>
+      <div class="chart-wrap"><svg width="960" height="320" viewBox="0 0 960 320"><text x="500.0" y="116.0" text-anchor="middle" font-size="10" fill="currentColor" opacity="0.5" letter-spacing="0.14em">SINGLE SNAPSHOT · TIME SERIES BUILDS WEEKLY</text><circle cx="500.0" cy="152.0" r="6" fill="currentColor"/><text x="500.0" y="184.0" text-anchor="middle" font-size="13" fill="currentColor">136 survivors · 2026-05-07</text></svg></div>
+      <div class="breadth-meta">
+        <span><span class="meta-num">136</span><span class="meta-lbl">THIS WEEK</span></span>
+        <span><span class="meta-num">0</span><span class="meta-lbl">VS FIRST SNAPSHOT (2026-05-07)</span></span>
+        <span><span class="meta-num">22.6%</span><span class="meta-lbl">SURVIVOR RATE</span></span>
+      </div>
+    </div>
+    
+    </div>
 
     <div class="foot">
       Filter: Mark Minervini Stage 2 trend-template (8 binary gates).
@@ -384,5 +568,106 @@
       <a href="https://github.com/soylee22/momentum-power-scanner">Source repo</a>
     </div>
   </div>
+
+  <script>
+    // Tab switching
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const t = btn.dataset.tab;
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        document.querySelector('.tab-panel[data-panel="' + t + '"]').classList.add('active');
+        if (history.replaceState) history.replaceState(null, '', '#' + t);
+      });
+    });
+    // Honour hash on load
+    const hash = window.location.hash.replace('#','');
+    if (hash) {
+      const btn = document.querySelector('.tab-btn[data-tab="' + hash + '"]');
+      if (btn) btn.click();
+    }
+
+    // Watchlist sort + filter
+    (function() {
+      const WL_DATA = [];
+      if (!WL_DATA.length) return;
+      const tbody = document.querySelector('#wl-table tbody');
+      if (!tbody) return;
+      const searchEl = document.getElementById('wl-search');
+      const indexEl = document.getElementById('wl-index');
+      const sectorEl = document.getElementById('wl-sector');
+      const emptyEl = document.getElementById('wl-empty');
+      const headers = document.querySelectorAll('#wl-table thead th[data-key]');
+      let sortKey = 'rank_overall';
+      let sortDir = 'asc';
+
+      const sectors = [...new Set(WL_DATA.map(r => r.sector).filter(Boolean))].sort();
+      for (const s of sectors) {
+        const opt = document.createElement('option');
+        opt.value = s; opt.textContent = s;
+        sectorEl.appendChild(opt);
+      }
+
+      function fmtPct(x) { return (x*100).toFixed(1) + '%'; }
+      function fmtNum3(x) { return Number(x).toFixed(3); }
+      function fmtInt(x) { return Math.round(x).toString(); }
+
+      function render() {
+        const q = searchEl.value.trim().toLowerCase();
+        const idx = indexEl.value;
+        const sec = sectorEl.value;
+        let rows = WL_DATA.filter(r => {
+          if (idx && r.index !== idx) return false;
+          if (sec && r.sector !== sec) return false;
+          if (!q) return true;
+          const hay = (r.ticker + ' ' + (r.name||'') + ' ' + (r.sector||'')).toLowerCase();
+          return hay.includes(q);
+        });
+        rows.sort((a,b) => {
+          let va = a[sortKey], vb = b[sortKey];
+          if (typeof va === 'string') { va = va.toLowerCase(); vb = (vb||'').toLowerCase(); }
+          if (va < vb) return sortDir === 'asc' ? -1 : 1;
+          if (va > vb) return sortDir === 'asc' ? 1 : -1;
+          return 0;
+        });
+        emptyEl.style.display = rows.length ? 'none' : 'block';
+        tbody.innerHTML = rows.map(r => {
+          const flag = r.index === 'S&P 500' ? '🇺🇸' : '🇬🇧';
+          const ret = (r.return_12m*100);
+          const retCls = ret >= 0 ? 'num accent' : 'num';
+          const retStr = (ret>=0?'+':'') + ret.toFixed(0) + '%';
+          return '<tr>' +
+            '<td class="rank">' + r.rank_overall + '</td>' +
+            '<td class="ticker"><span class="tk">' + r.ticker + '</span></td>' +
+            '<td>' + (r.name||'') + '</td>' +
+            '<td>' + (r.sector||'') + '</td>' +
+            '<td>' + flag + '</td>' +
+            '<td class="num">' + fmtInt(r.rs_rating) + '</td>' +
+            '<td class="num">' + fmtPct(r.dist_from_high) + '</td>' +
+            '<td class="' + retCls + '">' + retStr + '</td>' +
+            '<td class="num">' + fmtNum3(r.composite) + '</td>' +
+          '</tr>';
+        }).join('');
+      }
+
+      headers.forEach(h => h.addEventListener('click', () => {
+        const key = h.dataset.key;
+        if (sortKey === key) {
+          sortDir = sortDir === 'asc' ? 'desc' : 'asc';
+        } else {
+          sortKey = key;
+          sortDir = ['rank_overall','ticker','name','sector','index'].includes(key) ? 'asc' : 'desc';
+        }
+        headers.forEach(x => x.classList.remove('sorted','asc'));
+        h.classList.add('sorted');
+        if (sortDir === 'asc') h.classList.add('asc');
+        render();
+      }));
+
+      [searchEl, indexEl, sectorEl].forEach(el => el.addEventListener('input', render));
+      render();
+    })();
+  </script>
 </body>
 </html>
