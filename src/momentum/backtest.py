@@ -51,6 +51,8 @@ class BacktestConfig:
     start: dt.date = dt.date(2017, 1, 1)
     end: dt.date | None = None
     min_universe: int = 50  # if survivor pool < this, skip rebalance
+    overlay_sma_months: int | None = None  # if set, go to cash when overlay_ticker < SMA(N months)
+    overlay_ticker: str = "SPY"            # cash-overlay signal source
 
 
 @dataclass
@@ -240,11 +242,26 @@ def run_backtest(
     universe: pd.DataFrame,
     config: BacktestConfig,
     benchmarks: dict[str, pd.Series] | None = None,
+    overlay_prices: pd.Series | None = None,
 ) -> BacktestResult:
     """Run a single configuration. benchmarks is an optional dict of
-    {label: daily Close Series} — used purely for the equity curve plot."""
+    {label: daily Close Series} used purely for the equity curve plot.
+
+    overlay_prices: optional daily Close Series for the cash-overlay signal
+    (typically SPY). When supplied AND config.overlay_sma_months is set,
+    rebalance days check whether the overlay is above its N-month SMA. If
+    not, all positions are liquidated and the basket sits in cash until the
+    next rebal day where the overlay flips back above.
+    """
     prices_wide = long_to_wide(prices_long)
     features = compute_feature_panel(prices_wide)
+
+    # Prepare overlay if active
+    overlay_active = config.overlay_sma_months is not None and overlay_prices is not None
+    if overlay_active:
+        ov = overlay_prices.copy()
+        ov.index = pd.to_datetime(ov.index)
+        ov = ov.sort_index()
 
     end = config.end or prices_wide.index.max().date()
     rebal_dates = _pick_rebalance_dates(prices_wide.index, config.start, end, config.rebalance_freq)
@@ -292,6 +309,40 @@ def run_backtest(
             nav_today = nav
 
         if is_rebal:
+            # Cash overlay check (Faber-style 10mo SMA on a market proxy)
+            in_market = True
+            if overlay_active:
+                ov_hist = ov.loc[:d].dropna()
+                if len(ov_hist) >= 21 * config.overlay_sma_months:
+                    sma = ov_hist.iloc[-21 * config.overlay_sma_months:].mean()
+                    in_market = float(ov_hist.iloc[-1]) > float(sma)
+
+            if not in_market:
+                # Liquidate everything at today's close and sit in cash until next rebal
+                if positions:
+                    sold_value = 0.0
+                    for tk, sh in positions.items():
+                        p = prices_wide.loc[d, tk] if tk in prices_wide.columns else np.nan
+                        if np.isnan(p):
+                            col = prices_wide[tk].loc[:d].dropna()
+                            if not col.empty:
+                                p = float(col.iloc[-1])
+                        if not np.isnan(p):
+                            sold_value += sh * float(p)
+                            trades_rows.append({
+                                "date": d.date(), "ticker": tk, "side": "overlay_exit",
+                                "amount": sh * float(p),
+                            })
+                    nav_today = sold_value * (1 - cost_rate)
+                    positions = {}
+                # Log a CASH holding row so the dashboard can show the cash regime
+                holdings_rows.append({
+                    "date": d.date(), "ticker": "CASH", "weight": 1.0, "rank": np.nan,
+                })
+                equity_rows.append({"date": d.date(), "portfolio_value": nav_today})
+                nav = nav_today
+                continue
+
             ranked = rank_snapshot(features, universe, d)
             if len(ranked) < config.min_universe:
                 # Not enough survivors — hold current positions, no trade
