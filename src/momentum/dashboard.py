@@ -387,17 +387,24 @@ def _marketfighter_card() -> str:
         from .marketfighter import (
             compute_live_picks, FACTOR_BASKET, SECTOR_BASKET_EXPANDED,
         )
-        prices_path = ROOT / "data" / "prices.parquet"
-        if not prices_path.exists():
-            return '<div class="lightcard"><h2>MarketFighter live</h2><div class="empty">Price cache missing.</div></div>'
-        df = pd.read_parquet(prices_path)
-        df["date"] = pd.to_datetime(df["date"]).dt.date
-        # Only need rows for tickers in MF universe
+        # Prefer the MF-specific cache (always has the full basket); fall back
+        # to the live scanner cache otherwise.
+        mf_path = ROOT / "data" / "prices_mf.parquet"
+        live_path = ROOT / "data" / "prices.parquet"
         mf_tickers = set(FACTOR_BASKET + SECTOR_BASKET_EXPANDED)
-        df = df[df["ticker"].isin(mf_tickers)]
-        if df.empty:
+        df = None
+        for path in (mf_path, live_path):
+            if not path.exists():
+                continue
+            cand = pd.read_parquet(path)
+            cand["date"] = pd.to_datetime(cand["date"]).dt.date
+            cand = cand[cand["ticker"].isin(mf_tickers)]
+            if not cand.empty and cand["ticker"].nunique() >= 10:
+                df = cand
+                break
+        if df is None or df.empty:
             return ('<div class="lightcard"><h2>MarketFighter live</h2>'
-                    '<div class="empty">MF tickers not yet in price cache — first scan after deploy will populate them.</div></div>')
+                    '<div class="empty">MF tickers not yet in price cache.</div></div>')
         picks = compute_live_picks(df, overlay_sma_months=None)  # no overlay by default for live view
     except Exception as exc:
         return f'<div class="lightcard"><h2>MarketFighter live</h2><div class="empty">computation failed: {exc!r}</div></div>'

@@ -35,6 +35,11 @@ jobs:
           python -m pip install --upgrade pip
           pip install -e .
 
+      - name: Top up MarketFighter price cache
+        run: python scripts/fetch_mf.py
+        env:
+          PYTHONUNBUFFERED: "1"
+
       - name: Run scanner
         run: python -m momentum.scanner
         env:
@@ -48,7 +53,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/prices.parquet data/universe.parquet data/history/ data/.last_sent_digest.json docs/ outputs/latest.csv outputs/latest.md
+          git add data/prices.parquet data/prices_mf.parquet data/universe.parquet data/history/ data/.last_sent_digest.json docs/ outputs/latest.csv outputs/latest.md
           if git diff --staged --quiet; then
             echo "Nothing to commit."
             exit 0
