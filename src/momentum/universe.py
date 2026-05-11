@@ -105,6 +105,29 @@ def _fetch_ftse100() -> pd.DataFrame:
     return df
 
 
+def _extras() -> pd.DataFrame:
+    """Curated alts that aren't in the equity indices but trade on the LSE
+    and are eligible for the Stage 2 trend filter the same way any other
+    instrument with a daily price series is. Physical-backed ETCs only.
+
+    Lee's request: gold + silver in the scanner so commodities can show
+    up alongside equities when they're trending.
+    """
+    rows = [
+        # Precious metals — physical-backed iShares ETCs, GBP-denominated.
+        # All three available on Trading 212 (Lee's broker).
+        ("SGLN.L", "iShares Physical Gold",     "Precious Metals",  "Commodity ETF"),
+        ("SSLN.L", "iShares Physical Silver",   "Precious Metals",  "Commodity ETF"),
+        ("SPLT.L", "iShares Physical Platinum", "Precious Metals",  "Commodity ETF"),
+    ]
+    df = pd.DataFrame(rows, columns=["ticker", "name", "sector", "index"])
+    df["industry"] = df["sector"]
+    df["exchange"] = "LSE"
+    df["country"] = "UK"
+    df["currency"] = "GBP"
+    return df[["ticker", "name", "sector", "industry", "exchange", "country", "currency", "index"]]
+
+
 def _cache_is_fresh() -> bool:
     if not CACHE_PATH.exists():
         return False
@@ -113,7 +136,7 @@ def _cache_is_fresh() -> bool:
 
 
 def load_universe(force_refresh: bool = False) -> pd.DataFrame:
-    """Return the combined S&P 500 + FTSE 100 universe.
+    """Return the combined S&P 500 + FTSE 100 + alts universe.
 
     Cached for 7 days.
     """
@@ -122,7 +145,8 @@ def load_universe(force_refresh: bool = False) -> pd.DataFrame:
 
     sp = _fetch_sp500()
     ft = _fetch_ftse100()
-    combined = pd.concat([sp, ft], ignore_index=True).drop_duplicates("ticker")
+    alt = _extras()
+    combined = pd.concat([sp, ft, alt], ignore_index=True).drop_duplicates("ticker")
     CACHE_PATH.parent.mkdir(parents=True, exist_ok=True)
     combined.to_parquet(CACHE_PATH, index=False)
     return combined

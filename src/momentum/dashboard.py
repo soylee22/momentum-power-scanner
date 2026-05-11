@@ -30,6 +30,19 @@ def _load_snapshots() -> list[dict]:
     return [json.loads(p.read_text()) for p in snaps]
 
 
+def _index_glyph(idx: str) -> str:
+    """Map index/asset class -> emoji glyph for the dashboard tables."""
+    if idx == "S&P 500":
+        return "\U0001F1FA\U0001F1F8"  # 🇺🇸
+    if idx == "FTSE 100":
+        return "\U0001F1EC\U0001F1E7"  # 🇬🇧
+    if idx == "Commodity ETF":
+        return "\U0001F947"            # 🥇 gold medal
+    if idx == "Crypto ETF":
+        return "₿"                # ₿ bitcoin sign
+    return "•"                    # • fallback
+
+
 # ---------------------------------------------------------------------------
 # Aggregations across snapshots
 # ---------------------------------------------------------------------------
@@ -216,7 +229,7 @@ def _pct(x) -> str:
 def _top10_card(latest: dict) -> str:
     rows_html = []
     for r in latest.get("top10", []):
-        flag = "\U0001F1FA\U0001F1F8" if r["index"] == "S&P 500" else "\U0001F1EC\U0001F1E7"
+        flag = _index_glyph(r["index"])
         ticker_id = r["ticker"].replace(".", "_")
         rows_html.append(f"""
           <tr>
@@ -319,7 +332,7 @@ def _persistence_card(rows: list[dict]) -> str:
         """
     row_html = []
     for r in rows:
-        flag = "\U0001F1FA\U0001F1F8" if r["index"] == "S&P 500" else "\U0001F1EC\U0001F1E7"
+        flag = _index_glyph(r["index"])
         spark = _sparkline_svg(r["trajectory"])
         current = (
             f'<span class="num">{r["current_rank"]}</span>'
@@ -1085,7 +1098,13 @@ def render_dashboard() -> Path:
         }});
         emptyEl.style.display = rows.length ? 'none' : 'block';
         tbody.innerHTML = rows.map(r => {{
-          const flag = r.index === 'S&P 500' ? '\U0001F1FA\U0001F1F8' : '\U0001F1EC\U0001F1E7';
+          const flag = (
+            r.index === 'S&P 500'      ? '\U0001F1FA\U0001F1F8' :
+            r.index === 'FTSE 100'     ? '\U0001F1EC\U0001F1E7' :
+            r.index === 'Commodity ETF'? '\U0001F947' :
+            r.index === 'Crypto ETF'   ? '₿' :
+            '•'
+          );
           const ret = (r.return_12m*100);
           const retCls = ret >= 0 ? 'num accent' : 'num';
           const retStr = (ret>=0?'+':'') + ret.toFixed(0) + '%';
