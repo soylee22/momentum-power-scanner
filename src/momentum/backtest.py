@@ -38,6 +38,14 @@ class BacktestConfig:
     # "replace"   = only trade names entering/leaving the top_n. Existing positions
     #               ride at their drifted weights. New entrants funded equally from
     #               the proceeds of leavers. Winners run. Lower turnover, less tax.
+    require_setup: bool = False
+    # If True, only names with an active VCP + pivot-break "setup_buy" on the rebal
+    # day are eligible to be NEW entries. Existing holdings still ride. This is the
+    # Minervini-v2 layer — no chasing extended names.
+    stop_loss_pct: float | None = None
+    # If set, daily intra-month check: any position whose close falls below
+    # entry_price × (1 - stop_loss_pct) is sold immediately at that day's close.
+    # Cash sits until next rebal. Classic Minervini 7-8% stop = pass 0.08.
     transaction_cost_bps: float = 5.0  # round-trip
     starting_capital: float = 100_000.0
     start: dt.date = dt.date(2017, 1, 1)
@@ -64,6 +72,13 @@ def long_to_wide(prices_long: pd.DataFrame) -> pd.DataFrame:
     df = prices_long.copy()
     df["date"] = pd.to_datetime(df["date"])
     return df.pivot_table(index="date", columns="ticker", values="close", aggfunc="last").sort_index()
+
+
+def long_to_wide_volume(prices_long: pd.DataFrame) -> pd.DataFrame:
+    """Long table -> wide volume panel."""
+    df = prices_long.copy()
+    df["date"] = pd.to_datetime(df["date"])
+    return df.pivot_table(index="date", columns="ticker", values="volume", aggfunc="last").sort_index()
 
 
 def compute_feature_panel(prices_wide: pd.DataFrame) -> dict[str, pd.DataFrame]:
@@ -436,6 +451,236 @@ def run_backtest(
             bench.index = pd.to_datetime(bench.index).date
             bench = bench.reindex(equity.index, method="ffill")
             # Normalise to start at the same capital
+            first = bench.dropna().iloc[0] if not bench.dropna().empty else np.nan
+            if not np.isnan(first):
+                equity[label] = bench / first * config.starting_capital
+
+    metrics = _compute_metrics(equity, "portfolio_value")
+    if benchmarks:
+        for label in benchmarks:
+            if label in equity.columns:
+                metrics[f"{label}_metrics"] = _compute_metrics(equity, label)
+
+    return BacktestResult(
+        config=config,
+        equity_curve=equity.reset_index(),
+        holdings=pd.DataFrame(holdings_rows),
+        trades=pd.DataFrame(trades_rows),
+        metrics=metrics,
+    )
+
+
+# ---------------------------------------------------------------------------
+# v2 backtest — Minervini playbook: VCP+pivot setup-required entry + 8% stop
+# ---------------------------------------------------------------------------
+
+
+def run_backtest_v2(
+    prices_long: pd.DataFrame,
+    universe: pd.DataFrame,
+    config: BacktestConfig,
+    benchmarks: dict[str, pd.Series] | None = None,
+) -> BacktestResult:
+    """v2 engine with explicit cash, intra-month stops, and setup-gated entries.
+
+    Requires config.require_setup=True OR config.stop_loss_pct set (otherwise
+    use run_backtest). Cash sits in slots that have no active setup; the
+    portfolio can be partially in cash, which is realistic Minervini behaviour.
+    """
+    from .setup import compute_setup_panel
+
+    prices_wide = long_to_wide(prices_long)
+    volumes_wide = long_to_wide_volume(prices_long)
+    features = compute_feature_panel(prices_wide)
+    setups = compute_setup_panel(prices_wide, volumes_wide) if config.require_setup else {}
+
+    end = config.end or prices_wide.index.max().date()
+    rebal_dates = _pick_rebalance_dates(prices_wide.index, config.start, end, config.rebalance_freq)
+    if not rebal_dates:
+        raise ValueError("No rebalance dates in the window.")
+
+    cash = float(config.starting_capital)
+    positions: dict[str, float] = {}        # ticker -> shares
+    entry_prices: dict[str, float] = {}      # ticker -> entry close
+    equity_rows = []
+    holdings_rows = []
+    trades_rows = []
+    last_target_ranks: dict[str, int] = {}
+
+    cost_rate = config.transaction_cost_bps / 10_000.0
+    stop_pct = config.stop_loss_pct
+
+    all_trading_days = prices_wide.index[
+        (prices_wide.index.date >= config.start) & (prices_wide.index.date <= end)
+    ]
+    rebal_set = set(rebal_dates)
+
+    def _last_valid_price(tk: str, d: pd.Timestamp) -> float:
+        if tk not in prices_wide.columns:
+            return float("nan")
+        p = prices_wide.loc[d, tk]
+        if np.isnan(p):
+            col = prices_wide[tk].loc[:d].dropna()
+            return float(col.iloc[-1]) if not col.empty else float("nan")
+        return float(p)
+
+    for d in all_trading_days:
+        # 1. STOP CHECK (daily, regardless of rebal). Sell anything that closed
+        #    below entry × (1 - stop_pct) at today's close.
+        if stop_pct is not None and positions:
+            for tk in list(positions.keys()):
+                if tk not in prices_wide.columns:
+                    continue
+                p_today = prices_wide.loc[d, tk]
+                if np.isnan(p_today):
+                    continue
+                trigger = entry_prices.get(tk, 0.0) * (1 - stop_pct)
+                if p_today <= trigger:
+                    proceeds = positions[tk] * float(p_today)
+                    cash += proceeds * (1 - cost_rate)
+                    trades_rows.append({
+                        "date": d.date(), "ticker": tk, "side": "stop",
+                        "amount": proceeds,
+                    })
+                    del positions[tk]
+                    del entry_prices[tk]
+
+        # 2. MARK-TO-MARKET
+        gross = 0.0
+        valued_count = 0
+        for tk, sh in positions.items():
+            p = _last_valid_price(tk, d)
+            if not np.isnan(p):
+                gross += sh * p
+                valued_count += 1
+        if valued_count >= max(1, len(positions) // 2) or not positions:
+            nav_today = cash + gross
+        else:
+            # carry forward yesterday's NAV
+            nav_today = equity_rows[-1]["portfolio_value"] if equity_rows else config.starting_capital
+
+        # 3. REBALANCE
+        if d in rebal_set:
+            ranked = rank_snapshot(features, universe, d)
+            if len(ranked) >= config.min_universe:
+                # Apply setup filter to the universe of candidates IF required
+                if config.require_setup and setups:
+                    setup_today = {
+                        tk for tk, df in setups.items()
+                        if (df.index <= d).any() and bool(df.loc[df.index[df.index <= d][-1], "setup_buy"])
+                    }
+                else:
+                    setup_today = set(ranked["ticker"])
+
+                # drift_buffer logic — same as v1
+                if config.drift_buffer > 0 and positions:
+                    current_tickers = set(positions.keys())
+                    rank_lookup = dict(zip(ranked["ticker"], ranked["rank_overall"]))
+                    keep = {tk for tk in current_tickers
+                            if rank_lookup.get(tk, 9999) <= config.top_n + config.drift_buffer}
+                    n_new_needed = config.top_n - len(keep)
+                    # New entrants MUST have an active setup
+                    new_picks = [
+                        tk for tk in ranked["ticker"].tolist()
+                        if tk not in keep and tk in setup_today
+                    ][:max(0, n_new_needed)]
+                    target_tickers = list(keep) + new_picks
+                    target_ranks = {tk: rank_lookup.get(tk, 9999) for tk in target_tickers}
+                else:
+                    # Top of ranking, gated by setup for entries
+                    target_tickers = [
+                        tk for tk in ranked["ticker"].tolist() if tk in setup_today
+                    ][:config.top_n]
+                    target_ranks = dict(zip(target_tickers, range(1, len(target_tickers) + 1)))
+
+                target_set = set(target_tickers)
+                old_set = set(positions.keys())
+
+                if config.trade_mode == "replace":
+                    # Sell leavers
+                    leavers = old_set - target_set
+                    for tk in leavers:
+                        p = _last_valid_price(tk, d)
+                        if not np.isnan(p):
+                            proceeds = positions[tk] * p
+                            cash += proceeds * (1 - cost_rate)
+                            trades_rows.append({"date": d.date(), "ticker": tk, "side": "sell", "amount": proceeds})
+                        del positions[tk]
+                        entry_prices.pop(tk, None)
+                    # Buy entrants — equal slice of cash
+                    entrants = target_set - old_set
+                    if entrants and cash > 0:
+                        slot_size = cash / len(entrants)
+                        for tk in entrants:
+                            p = _last_valid_price(tk, d)
+                            if not np.isnan(p) and p > 0:
+                                spend = slot_size * (1 - cost_rate)
+                                positions[tk] = spend / p
+                                entry_prices[tk] = p
+                                cash -= slot_size
+                                trades_rows.append({"date": d.date(), "ticker": tk, "side": "buy", "amount": spend})
+                else:
+                    # rebalance mode — reset all targets to equal weight
+                    weight = 1.0 / max(len(target_tickers), 1)
+                    target_value = nav_today * weight
+                    # Sell everything first
+                    for tk in list(positions.keys()):
+                        p = _last_valid_price(tk, d)
+                        if not np.isnan(p):
+                            cash += positions[tk] * p * (1 - cost_rate)
+                            trades_rows.append({"date": d.date(), "ticker": tk, "side": "sell", "amount": positions[tk] * p})
+                        del positions[tk]
+                        entry_prices.pop(tk, None)
+                    # Buy targets equally
+                    for tk in target_tickers:
+                        p = _last_valid_price(tk, d)
+                        if not np.isnan(p) and p > 0:
+                            spend = target_value * (1 - cost_rate)
+                            positions[tk] = spend / p
+                            entry_prices[tk] = p
+                            cash -= target_value
+                            trades_rows.append({"date": d.date(), "ticker": tk, "side": "buy", "amount": spend})
+
+                last_target_ranks = target_ranks
+
+            # Log holdings on rebal day (actual weights)
+            gross_val = 0.0
+            pos_values = {}
+            for tk, sh in positions.items():
+                p = _last_valid_price(tk, d)
+                if not np.isnan(p):
+                    v = sh * p
+                    pos_values[tk] = v
+                    gross_val += v
+            total = gross_val + cash
+            for tk in positions:
+                w = pos_values.get(tk, 0.0) / total if total > 0 else np.nan
+                holdings_rows.append({
+                    "date": d.date(), "ticker": tk, "weight": w,
+                    "rank": last_target_ranks.get(tk, np.nan),
+                })
+            if cash > 0 and total > 0 and (cash / total) > 0.01:
+                holdings_rows.append({
+                    "date": d.date(), "ticker": "CASH",
+                    "weight": cash / total, "rank": np.nan,
+                })
+
+        # 4. Recompute MTM end-of-day after any rebal trades
+        gross = sum(
+            sh * _last_valid_price(tk, d)
+            for tk, sh in positions.items()
+            if not np.isnan(_last_valid_price(tk, d))
+        )
+        nav_today = cash + gross
+        equity_rows.append({"date": d.date(), "portfolio_value": nav_today})
+
+    equity = pd.DataFrame(equity_rows).set_index("date")
+
+    if benchmarks:
+        for label, series in benchmarks.items():
+            bench = series.copy()
+            bench.index = pd.to_datetime(bench.index).date
+            bench = bench.reindex(equity.index, method="ffill")
             first = bench.dropna().iloc[0] if not bench.dropna().empty else np.nan
             if not np.isnan(first):
                 equity[label] = bench / first * config.starting_capital
