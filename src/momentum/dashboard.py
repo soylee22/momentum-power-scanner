@@ -38,9 +38,13 @@ def _index_glyph(idx: str) -> str:
         return "\U0001F1EC\U0001F1E7"  # 🇬🇧
     if idx == "Commodity ETF":
         return "\U0001F947"            # 🥇 gold medal
+    if idx == "Thematic ETF":
+        return "\U0001F4A1"            # 💡 idea / theme
+    if idx == "Sector ETF":
+        return "\U0001F4CA"            # 📊 sector
     if idx == "Crypto ETF":
-        return "₿"                # ₿ bitcoin sign
-    return "•"                    # • fallback
+        return "₿"                     # bitcoin sign
+    return "•"
 
 
 # ---------------------------------------------------------------------------
@@ -375,6 +379,74 @@ def _persistence_card(rows: list[dict]) -> str:
     """
 
 
+def _marketfighter_card() -> str:
+    """Compute today's MarketFighter pick from the live price cache and render
+    a tab section. Two picks (factor + sector), each by 12m trailing return."""
+    try:
+        import pandas as pd
+        from .marketfighter import (
+            compute_live_picks, FACTOR_BASKET, SECTOR_BASKET_EXPANDED,
+        )
+        prices_path = ROOT / "data" / "prices.parquet"
+        if not prices_path.exists():
+            return '<div class="lightcard"><h2>MarketFighter live</h2><div class="empty">Price cache missing.</div></div>'
+        df = pd.read_parquet(prices_path)
+        df["date"] = pd.to_datetime(df["date"]).dt.date
+        # Only need rows for tickers in MF universe
+        mf_tickers = set(FACTOR_BASKET + SECTOR_BASKET_EXPANDED)
+        df = df[df["ticker"].isin(mf_tickers)]
+        if df.empty:
+            return ('<div class="lightcard"><h2>MarketFighter live</h2>'
+                    '<div class="empty">MF tickers not yet in price cache — first scan after deploy will populate them.</div></div>')
+        picks = compute_live_picks(df, overlay_sma_months=None)  # no overlay by default for live view
+    except Exception as exc:
+        return f'<div class="lightcard"><h2>MarketFighter live</h2><div class="empty">computation failed: {exc!r}</div></div>'
+
+    def _pick_html(label: str, pick: dict | None, rankings: list) -> str:
+        if pick is None:
+            body = '<div class="mf-cash">CASH — no setup or overlay-out</div>'
+        else:
+            body = (
+                f'<div class="mf-ticker">{pick["ticker"]}</div>'
+                f'<div class="mf-meta">12m total return: '
+                f'<strong>{pick["return_12m"]*100:+.1f}%</strong></div>'
+            )
+        top3 = "".join(
+            f'<tr><td>{i+1}</td><td><code>{tk}</code></td>'
+            f'<td class="num {"accent" if r>=0 else ""}">{r*100:+.1f}%</td></tr>'
+            for i, (tk, r) in enumerate(rankings[:5])
+        )
+        return f"""
+        <div class="mf-leg">
+          <div class="mf-leg-label">{label}</div>
+          {body}
+          <table class="mf-runners">
+            <thead><tr><th>#</th><th>Ticker</th><th class="right">12m</th></tr></thead>
+            <tbody>{top3}</tbody>
+          </table>
+        </div>
+        """
+
+    factor_html = _pick_html("FACTOR LEG", picks["factor_pick"], picks["factor_rankings"])
+    sector_html = _pick_html("SECTOR LEG", picks["sector_pick"], picks["sector_rankings"])
+    asof = picks["asof"]
+    return f"""
+    <div class="lightcard">
+      <h2>MarketFighter · today's pick</h2>
+      <div class="sub">
+        Parallel ETF rotation strategy. Each month, pick the single best-performing ETF in each basket by 12-month total return. Hold both 50/50. No Stage 2 filter, no composite ranker — pure relative momentum, as designed by the MarketFighter Substack author. Backtest 2019-04 to 2026-05 with expanded 12-ETF sector basket: <strong>23.6% CAGR, Sharpe 1.02, max DD -31%</strong>. See <a href="marketfighter.html">full comparison</a>.
+      </div>
+      <div class="mf-grid">
+        {factor_html}
+        {sector_html}
+      </div>
+      <p class="muted" style="margin-top:24px;">
+        Asof {asof}. Trade rule: execute on the last trading day of each month if the pick differs from last month. Often it won't.
+      </p>
+    </div>
+    """
+
+
 def _method_card() -> str:
     """Annotated breakdown of how the composite score is computed.
 
@@ -555,6 +627,7 @@ def render_dashboard() -> Path:
     breadth_section = _breadth_card(breadth_data)
 
     method_section = _method_card()
+    marketfighter_section = _marketfighter_card()
 
     html = f"""<!DOCTYPE html>
 <html lang="en">
@@ -910,6 +983,21 @@ def render_dashboard() -> Path:
       .braces {{ height: 38px; }}
     }}
 
+    /* MarketFighter live tab */
+    .mf-grid {{ display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }}
+    .mf-leg {{ border: 1px solid var(--hairline-lt); border-radius: 14px; padding: 22px 20px; background: var(--stage); }}
+    .mf-leg-label {{ font-size: 10px; letter-spacing: 0.14em; color: var(--mute); text-transform: uppercase; margin-bottom: 12px; }}
+    .mf-ticker {{ font-size: 36px; font-weight: 600; letter-spacing: -0.02em; line-height: 1; color: var(--ink); }}
+    .mf-meta {{ font-size: 12px; color: var(--graphite); margin-top: 8px; }}
+    .mf-cash {{ font-size: 24px; font-weight: 500; color: var(--mute); letter-spacing: 0.08em; padding: 6px 0; }}
+    .mf-runners {{ width: 100%; margin-top: 16px; font-size: 12px; }}
+    .mf-runners th {{ font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--mute); }}
+    .mf-runners td {{ padding: 6px 4px; }}
+    .mf-runners code {{ font-size: 11px; }}
+    @media (max-width: 720px) {{
+      .mf-grid {{ grid-template-columns: 1fr; }}
+    }}
+
     /* Breadth chart */
     .chart-wrap {{
       background: var(--stage);
@@ -980,6 +1068,7 @@ def render_dashboard() -> Path:
       <button class="tab-btn" data-tab="watchlist">Watchlist</button>
       <button class="tab-btn" data-tab="persistence">Persistence</button>
       <button class="tab-btn" data-tab="breadth">Breadth</button>
+      <button class="tab-btn" data-tab="marketfighter">MarketFighter</button>
       <button class="tab-btn" data-tab="method">Method</button>
     </div>
 
@@ -994,6 +1083,9 @@ def render_dashboard() -> Path:
     </div>
     <div class="tab-panel" data-panel="breadth">
       {breadth_section}
+    </div>
+    <div class="tab-panel" data-panel="marketfighter">
+      {marketfighter_section}
     </div>
     <div class="tab-panel" data-panel="method">
       {method_section}

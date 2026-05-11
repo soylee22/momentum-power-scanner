@@ -116,9 +116,26 @@ def _extras() -> pd.DataFrame:
     rows = [
         # Precious metals — physical-backed iShares ETCs, GBP-denominated.
         # All three available on Trading 212 (Lee's broker).
-        ("SGLN.L", "iShares Physical Gold",     "Precious Metals",  "Commodity ETF"),
-        ("SSLN.L", "iShares Physical Silver",   "Precious Metals",  "Commodity ETF"),
-        ("SPLT.L", "iShares Physical Platinum", "Precious Metals",  "Commodity ETF"),
+        ("SGLN.L", "iShares Physical Gold",       "Precious Metals",      "Commodity ETF"),
+        ("SSLN.L", "iShares Physical Silver",     "Precious Metals",      "Commodity ETF"),
+        ("SPLT.L", "iShares Physical Platinum",   "Precious Metals",      "Commodity ETF"),
+        # Thematic / sub-sector — let the scanner surface these when they're trending.
+        ("SMH.L",  "VanEck Semiconductor",        "Semiconductors",       "Thematic ETF"),
+        ("DFND.L", "Future Generations Defence",  "Aerospace & Defence",  "Thematic ETF"),
+        # Missing GICS sectors — full sector coverage so themes can compete with stocks.
+        ("IUFS.L", "iShares S&P 500 Financials",  "Financials",           "Sector ETF"),
+        ("IUCM.L", "iShares S&P 500 Comm Services","Communication Services","Sector ETF"),
+        ("IUUS.L", "iShares S&P 500 Utilities",   "Utilities",            "Sector ETF"),
+        ("IUSP.L", "iShares S&P 500 Real Estate", "Real Estate",          "Sector ETF"),
+        # MarketFighter factor basket — let the live scanner show today's pick.
+        ("IUMO.L", "iShares Edge MSCI USA Momentum",  "Factor",  "Factor ETF"),
+        ("IUQA.L", "iShares Edge MSCI USA Quality",   "Factor",  "Factor ETF"),
+        ("IUVL.L", "iShares Edge MSCI USA Value",     "Factor",  "Factor ETF"),
+        ("CUS1.L", "iShares S&P 600 Small Cap",       "Factor",  "Factor ETF"),
+        ("IEMO.L", "iShares Edge MSCI Europe Momentum","Factor", "Factor ETF"),
+        ("IEQU.L", "iShares Edge MSCI Europe Quality","Factor",  "Factor ETF"),
+        ("IEVL.L", "iShares Edge MSCI Europe Value",  "Factor",  "Factor ETF"),
+        ("WSML.L", "iShares MSCI World Small Cap",    "Factor",  "Factor ETF"),
     ]
     df = pd.DataFrame(rows, columns=["ticker", "name", "sector", "index"])
     df["industry"] = df["sector"]

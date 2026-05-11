@@ -42,6 +42,16 @@ SECTOR_BASKET = [
     "IUMS.L",  # Materials
 ]
 
+# Expanded basket — full 11 GICS sectors + pure-semi thematic. Lee's request.
+# SMH.L only has data from Dec 2020, so it'll register NaN-signal pre-Dec-2021.
+SECTOR_BASKET_EXPANDED = SECTOR_BASKET + [
+    "IUFS.L",  # Financials
+    "IUCM.L",  # Communication Services
+    "IUUS.L",  # Utilities
+    "IUSP.L",  # Real Estate
+    "SMH.L",   # Semis pure-play (VanEck UCITS)
+]
+
 
 @dataclass
 class MFConfig:
@@ -93,6 +103,67 @@ def _overlay_in_market(spy_wide: pd.Series, asof: pd.Timestamp, sma_months: int)
 
 
 # Main engine ------------------------------------------------------------------
+
+def compute_live_picks(
+    prices_long: pd.DataFrame,
+    asof: dt.date | None = None,
+    lookback_months: int = 12,
+    factor_basket: list[str] | None = None,
+    sector_basket: list[str] | None = None,
+    overlay_ticker: str = "SPY",
+    overlay_sma_months: int | None = 10,
+) -> dict:
+    """Compute today's MarketFighter pick from the live price feed.
+
+    Returns:
+      {
+        "asof": date,
+        "factor_pick":  {"ticker": str, "return_12m": float, ...} or None for cash,
+        "sector_pick":  {"ticker": str, ...} or None for cash,
+        "factor_rankings": [(ticker, return_12m), ...],
+        "sector_rankings": [(ticker, return_12m), ...],
+        "overlay_in_market": bool,
+      }
+    """
+    factor = factor_basket or FACTOR_BASKET
+    sector = sector_basket or SECTOR_BASKET
+    prices_w = _wide(prices_long, "close")
+    if asof is None:
+        asof_ts = prices_w.index[-1]
+    else:
+        asof_ts = pd.Timestamp(asof)
+        valid = prices_w.index[prices_w.index <= asof_ts]
+        asof_ts = valid[-1] if len(valid) else prices_w.index[-1]
+
+    in_market = True
+    if overlay_sma_months and overlay_ticker in prices_w.columns:
+        in_market = _overlay_in_market(prices_w[overlay_ticker], asof_ts, overlay_sma_months)
+
+    def _rank(basket: list[str]) -> list[tuple[str, float]]:
+        rets = _trailing_return(prices_w[[t for t in basket if t in prices_w.columns]], asof_ts, lookback_months)
+        rets = rets.dropna().sort_values(ascending=False)
+        return [(t, float(r)) for t, r in rets.items()]
+
+    factor_rankings = _rank(factor)
+    sector_rankings = _rank(sector)
+
+    factor_pick = None if not in_market or not factor_rankings else {
+        "ticker": factor_rankings[0][0],
+        "return_12m": factor_rankings[0][1],
+    }
+    sector_pick = None if not in_market or not sector_rankings else {
+        "ticker": sector_rankings[0][0],
+        "return_12m": sector_rankings[0][1],
+    }
+    return {
+        "asof": asof_ts.date().isoformat(),
+        "in_market": in_market,
+        "factor_pick": factor_pick,
+        "sector_pick": sector_pick,
+        "factor_rankings": factor_rankings,
+        "sector_rankings": sector_rankings,
+    }
+
 
 def run_marketfighter(
     prices_long: pd.DataFrame,

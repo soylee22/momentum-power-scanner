@@ -17,7 +17,7 @@ sys.path.insert(0, str(ROOT / "src"))
 
 from momentum.backtest import BacktestConfig, run_backtest  # noqa: E402
 from momentum.marketfighter import (  # noqa: E402
-    MFConfig, run_marketfighter, FACTOR_BASKET, SECTOR_BASKET,
+    MFConfig, run_marketfighter, FACTOR_BASKET, SECTOR_BASKET, SECTOR_BASKET_EXPANDED,
 )
 from momentum.universe import load_universe  # noqa: E402
 from momentum.palantir import PL  # noqa: E402
@@ -327,6 +327,60 @@ def main() -> None:
     mfc = MFConfig(start=START, overlay_sma_months=10)
     r = run_marketfighter(mf_prices, mfc, benchmarks=benchmarks)
     results["mf_clone_overlay10mo"] = r
+    m = r.metrics
+    print(f"    CAGR={(m.get('cagr') or 0)*100:5.1f}%  Sharpe={(m.get('sharpe') or 0):4.2f}  DD={(m.get('max_drawdown') or 0)*100:5.1f}%  End=£{(m.get('end_value') or 0)/1000:.1f}k")
+
+    # MarketFighter EXPANDED (11 GICS sectors + semi thematic), no overlay
+    print("  > mf_expanded_no_overlay")
+    mfc = MFConfig(start=START, overlay_sma_months=None)
+    r = run_marketfighter(mf_prices, mfc, benchmarks=benchmarks,
+                         sector_basket=SECTOR_BASKET_EXPANDED)
+    results["mf_expanded_no_overlay"] = r
+    m = r.metrics
+    print(f"    CAGR={(m.get('cagr') or 0)*100:5.1f}%  Sharpe={(m.get('sharpe') or 0):4.2f}  DD={(m.get('max_drawdown') or 0)*100:5.1f}%  End=£{(m.get('end_value') or 0)/1000:.1f}k")
+
+    # MarketFighter EXPANDED + overlay
+    print("  > mf_expanded_overlay10mo")
+    mfc = MFConfig(start=START, overlay_sma_months=10)
+    r = run_marketfighter(mf_prices, mfc, benchmarks=benchmarks,
+                         sector_basket=SECTOR_BASKET_EXPANDED)
+    results["mf_expanded_overlay10mo"] = r
+    m = r.metrics
+    print(f"    CAGR={(m.get('cagr') or 0)*100:5.1f}%  Sharpe={(m.get('sharpe') or 0):4.2f}  DD={(m.get('max_drawdown') or 0)*100:5.1f}%  End=£{(m.get('end_value') or 0)/1000:.1f}k")
+
+    # Apply OUR Stage 2 + composite algorithm to the ETF basket (top 2 from
+    # pooled 15+ ETFs). Tests whether the trend-template filter adds value
+    # over plain relative momentum.
+    print("  > stage2_on_etf_top2_drift2_RP")
+    etf_tickers = FACTOR_BASKET + SECTOR_BASKET_EXPANDED
+    etf_universe = pd.DataFrame({
+        "ticker": etf_tickers,
+        "name": etf_tickers,
+        "sector": "ETF",
+        "industry": "ETF",
+        "exchange": "LSE",
+        "country": "UK",
+        "currency": "GBP",
+        "index": "MF Basket",
+    })
+    etf_cfg = BacktestConfig(
+        top_n=2, rebalance_freq="monthly", weighting="equal",
+        drift_buffer=2, trade_mode="replace", start=START, min_universe=3,
+    )
+    r = run_backtest(mf_prices, etf_universe, etf_cfg, benchmarks=benchmarks)
+    results["stage2_on_etf_top2"] = r
+    m = r.metrics
+    print(f"    CAGR={(m.get('cagr') or 0)*100:5.1f}%  Sharpe={(m.get('sharpe') or 0):4.2f}  DD={(m.get('max_drawdown') or 0)*100:5.1f}%  End=£{(m.get('end_value') or 0)/1000:.1f}k")
+
+    # Same but with cash overlay
+    print("  > stage2_on_etf_top2_overlay10mo")
+    etf_cfg = BacktestConfig(
+        top_n=2, rebalance_freq="monthly", weighting="equal",
+        drift_buffer=2, trade_mode="replace", start=START, min_universe=3,
+        overlay_sma_months=10, overlay_ticker="SPY",
+    )
+    r = run_backtest(mf_prices, etf_universe, etf_cfg, benchmarks=benchmarks, overlay_prices=spy_series)
+    results["stage2_on_etf_top2_overlay"] = r
     m = r.metrics
     print(f"    CAGR={(m.get('cagr') or 0)*100:5.1f}%  Sharpe={(m.get('sharpe') or 0):4.2f}  DD={(m.get('max_drawdown') or 0)*100:5.1f}%  End=£{(m.get('end_value') or 0)/1000:.1f}k")
 

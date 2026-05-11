@@ -26,8 +26,9 @@ FACTOR_TICKERS = [
     "WSML.L",  # World Small Cap (substitute — Europe-only Small Cap UCITS not on yfinance)
 ]
 
-# Sector basket (7) — iShares S&P 500 sector UCITS
+# Sector basket — original (7, author spec) + expansion (full GICS + semi thematic)
 SECTOR_TICKERS = [
+    # Original author basket
     "IUIT.L",  # IT
     "IHCU.L",  # Health Care
     "IUES.L",  # Energy
@@ -35,6 +36,12 @@ SECTOR_TICKERS = [
     "IUCS.L",  # Consumer Staples
     "IUIS.L",  # Industrials
     "IUMS.L",  # Materials
+    # Expansion — rest of GICS sectors + a pure-semi thematic
+    "IUFS.L",  # Financials             (Nov 2015)
+    "IUCM.L",  # Communication Services (Sep 2018)
+    "IUUS.L",  # Utilities              (Mar 2017)
+    "IUSP.L",  # Real Estate            (Jan 2009)
+    "SMH.L",   # Semis (VanEck UCITS)   (Dec 2020 — NaN signal pre-Dec-2021)
 ]
 
 # Cash-overlay signal

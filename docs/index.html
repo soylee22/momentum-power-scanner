@@ -352,6 +352,21 @@
       .braces { height: 38px; }
     }
 
+    /* MarketFighter live tab */
+    .mf-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .mf-leg { border: 1px solid var(--hairline-lt); border-radius: 14px; padding: 22px 20px; background: var(--stage); }
+    .mf-leg-label { font-size: 10px; letter-spacing: 0.14em; color: var(--mute); text-transform: uppercase; margin-bottom: 12px; }
+    .mf-ticker { font-size: 36px; font-weight: 600; letter-spacing: -0.02em; line-height: 1; color: var(--ink); }
+    .mf-meta { font-size: 12px; color: var(--graphite); margin-top: 8px; }
+    .mf-cash { font-size: 24px; font-weight: 500; color: var(--mute); letter-spacing: 0.08em; padding: 6px 0; }
+    .mf-runners { width: 100%; margin-top: 16px; font-size: 12px; }
+    .mf-runners th { font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--mute); }
+    .mf-runners td { padding: 6px 4px; }
+    .mf-runners code { font-size: 11px; }
+    @media (max-width: 720px) {
+      .mf-grid { grid-template-columns: 1fr; }
+    }
+
     /* Breadth chart */
     .chart-wrap {
       background: var(--stage);
@@ -422,6 +437,7 @@
       <button class="tab-btn" data-tab="watchlist">Watchlist</button>
       <button class="tab-btn" data-tab="persistence">Persistence</button>
       <button class="tab-btn" data-tab="breadth">Breadth</button>
+      <button class="tab-btn" data-tab="marketfighter">MarketFighter</button>
       <button class="tab-btn" data-tab="method">Method</button>
     </div>
 
@@ -856,6 +872,9 @@
       </div>
     </div>
     
+    </div>
+    <div class="tab-panel" data-panel="marketfighter">
+      <div class="lightcard"><h2>MarketFighter live</h2><div class="empty">MF tickers not yet in price cache — first scan after deploy will populate them.</div></div>
     </div>
     <div class="tab-panel" data-panel="method">
       
