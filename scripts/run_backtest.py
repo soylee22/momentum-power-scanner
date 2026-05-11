@@ -58,43 +58,55 @@ def load_prices_long() -> pd.DataFrame:
 
 
 def sweep_configs(start: dt.date) -> list[tuple[str, BacktestConfig]]:
-    """Curated sweep — not Cartesian (would be 60 configs). Picks the
-    decisions that matter most: top_n, rebalance freq, drift, weighting."""
+    """Curated sweep covering the four real axes:
+        - top_n           (number of holdings)
+        - rebalance_freq  (how often we check)
+        - drift_buffer    (how long a name has to fade before we exit it)
+        - trade_mode      (full pie-rebalance vs replace-only)
+    """
     configs = []
+
+    # 1. Core sweep: top_n × freq, both trade modes, equal-weight
     for top_n in (5, 10, 20):
         for freq in ("weekly", "monthly", "quarterly"):
+            for mode in ("rebalance", "replace"):
+                tag = "RB" if mode == "rebalance" else "RP"
+                configs.append((
+                    f"top{top_n}_{freq}_{tag}",
+                    BacktestConfig(top_n=top_n, rebalance_freq=freq, weighting="equal",
+                                   drift_buffer=0, trade_mode=mode, start=start),
+                ))
+
+    # 2. Drift sweep at the headline shape (top10 monthly)
+    for buf in (3, 5, 10, 20):
+        for mode in ("rebalance", "replace"):
+            tag = "RB" if mode == "rebalance" else "RP"
             configs.append((
-                f"top{top_n}_{freq}_eq",
-                BacktestConfig(top_n=top_n, rebalance_freq=freq, weighting="equal",
-                               drift_buffer=0, start=start),
+                f"top10_monthly_drift{buf}_{tag}",
+                BacktestConfig(top_n=10, rebalance_freq="monthly", weighting="equal",
+                               drift_buffer=buf, trade_mode=mode, start=start),
             ))
-    # Drift-held variants for the headline shape
+
+    # 3. Composite-weighted variant (rebalance mode only — replace + composite is ill-defined)
     configs.append((
-        "top10_weekly_drift5",
-        BacktestConfig(top_n=10, rebalance_freq="weekly", weighting="equal",
-                       drift_buffer=5, start=start),
-    ))
-    configs.append((
-        "top10_monthly_drift5",
-        BacktestConfig(top_n=10, rebalance_freq="monthly", weighting="equal",
-                       drift_buffer=5, start=start),
-    ))
-    # Composite-weighted variant
-    configs.append((
-        "top10_monthly_compW",
+        "top10_monthly_compW_RB",
         BacktestConfig(top_n=10, rebalance_freq="monthly", weighting="composite",
-                       drift_buffer=0, start=start),
+                       drift_buffer=0, trade_mode="rebalance", start=start),
     ))
-    # Concentrated single-name
-    configs.append((
-        "top1_monthly",
-        BacktestConfig(top_n=1, rebalance_freq="monthly", weighting="equal", start=start),
-    ))
-    # Top-2 baseline
-    configs.append((
-        "top2_monthly",
-        BacktestConfig(top_n=2, rebalance_freq="monthly", weighting="equal", start=start),
-    ))
+
+    # 4. Concentrated stress-tests
+    for top_n in (1, 2):
+        configs.append((
+            f"top{top_n}_monthly_RB",
+            BacktestConfig(top_n=top_n, rebalance_freq="monthly", weighting="equal",
+                           trade_mode="rebalance", start=start),
+        ))
+        configs.append((
+            f"top{top_n}_monthly_RP",
+            BacktestConfig(top_n=top_n, rebalance_freq="monthly", weighting="equal",
+                           trade_mode="replace", start=start),
+        ))
+
     return configs
 
 
@@ -199,11 +211,20 @@ def _fmt_mult(x):
 
 
 def write_report(results: dict[str, "BacktestResult"], benchmarks: dict[str, pd.Series]) -> Path:
-    headline_key = "top10_monthly_eq"
+    headline_key = "top10_monthly_RB"
     headline = results.get(headline_key) or list(results.values())[0]
 
-    # Equity curves: headline + benchmarks + 2-3 alt configs
-    alt_keys = ["top5_monthly_eq", "top20_monthly_eq", "top10_weekly_eq", "top10_monthly_drift5", "top1_monthly"]
+    # Equity curves: headline + benchmarks + a curated alt set spanning the
+    # two trade modes and a few drift buffers, plus a concentrated stress test.
+    alt_keys = [
+        "top10_monthly_RP",
+        "top10_monthly_drift5_RB",
+        "top10_monthly_drift5_RP",
+        "top10_monthly_drift10_RP",
+        "top5_monthly_RB",
+        "top20_monthly_RB",
+        "top1_monthly_RB",
+    ]
     curves: dict[str, pd.Series] = {}
     eq = headline.equity_curve.set_index("date")["portfolio_value"]
     curves[headline_key] = eq
@@ -228,6 +249,7 @@ def write_report(results: dict[str, "BacktestResult"], benchmarks: dict[str, pd.
             "rebal": r.config.rebalance_freq,
             "weighting": r.config.weighting,
             "drift": r.config.drift_buffer,
+            "mode": r.config.trade_mode,
             "years": m.get("years"),
             "cagr": m.get("cagr"),
             "vol": m.get("vol_ann"),
@@ -246,6 +268,7 @@ def write_report(results: dict[str, "BacktestResult"], benchmarks: dict[str, pd.
           <td>{r['rebal']}</td>
           <td>{r['weighting']}</td>
           <td class="num">{r['drift']}</td>
+          <td><span class="mode mode-{r['mode']}">{r['mode']}</span></td>
           <td class="num">{_fmt_pct(r['cagr'])}</td>
           <td class="num">{_fmt_pct(r['vol'])}</td>
           <td class="num"><strong>{_fmt_mult(r['sharpe'])}</strong></td>
@@ -353,6 +376,9 @@ def write_report(results: dict[str, "BacktestResult"], benchmarks: dict[str, pd.
     details[open] summary {{ font-weight: 600; }}
     .holdings-table {{ margin: 8px 0 16px; font-size: 12px; }}
     .holdings-table th, .holdings-table td {{ padding: 6px 8px; }}
+    .mode {{ display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 10px; letter-spacing: 0.08em; font-weight: 600; }}
+    .mode-rebalance {{ background: rgba(110,143,198,0.18); color: #4566A0; }}
+    .mode-replace   {{ background: rgba(124,166,120,0.18); color: #4F7E4B; }}
     .foot {{ margin-top: 56px; font-size: 11px; color: var(--mute); letter-spacing: 0.04em; }}
     .foot a {{ color: var(--graphite); }}
   </style>
@@ -385,6 +411,7 @@ def write_report(results: dict[str, "BacktestResult"], benchmarks: dict[str, pd.
             <th>REBAL</th>
             <th>WEIGHT</th>
             <th class="right">DRIFT</th>
+            <th>MODE</th>
             <th class="right">CAGR</th>
             <th class="right">VOL</th>
             <th class="right">SHARPE</th>

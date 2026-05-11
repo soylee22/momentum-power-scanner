@@ -33,6 +33,11 @@ class BacktestConfig:
     rebalance_freq: Literal["weekly", "monthly", "quarterly"] = "weekly"
     weighting: Literal["equal", "composite"] = "equal"
     drift_buffer: int = 0  # 0 = follow exactly; N = exit only when rank > top_n + N
+    trade_mode: Literal["rebalance", "replace"] = "rebalance"
+    # "rebalance" = re-set every name to target weight each rebal day (trims winners).
+    # "replace"   = only trade names entering/leaving the top_n. Existing positions
+    #               ride at their drifted weights. New entrants funded equally from
+    #               the proceeds of leavers. Winners run. Lower turnover, less tax.
     transaction_cost_bps: float = 5.0  # round-trip
     starting_capital: float = 100_000.0
     start: dt.date = dt.date(2017, 1, 1)
@@ -295,60 +300,100 @@ def run_backtest(
                     target_tickers = ranked["ticker"].head(config.top_n).tolist()
                     target_ranks = dict(zip(target_tickers, range(1, len(target_tickers) + 1)))
 
-                # Weights
-                if config.weighting == "composite" and target_tickers:
-                    comp_lookup = dict(zip(ranked["ticker"], ranked["composite"]))
-                    weights = np.array([max(comp_lookup.get(tk, 0.0), 0.0) for tk in target_tickers])
-                    if weights.sum() == 0:
-                        weights = np.ones(len(target_tickers))
-                    weights = weights / weights.sum()
-                else:
-                    weights = np.ones(len(target_tickers)) / max(len(target_tickers), 1)
-
-                target_weight = dict(zip(target_tickers, weights))
-
-                # Compute trades. Current holdings -> target holdings.
-                # nav_today = current NAV (mark-to-market just done above).
+                # Current dollar value per held name. Use today's close if valid;
+                # otherwise fall back to the last known close (e.g. a UK ticker on a
+                # US holiday). This keeps positions from silently vanishing under
+                # high-churn replace mode.
                 current_value = {}
                 for tk, sh in positions.items():
-                    p = prices_wide.loc[d, tk] if tk in prices_wide.columns else np.nan
-                    if not np.isnan(p):
+                    if tk not in prices_wide.columns:
+                        continue
+                    p = prices_wide.loc[d, tk]
+                    if np.isnan(p):
+                        col = prices_wide[tk].loc[:d].dropna()
+                        if not col.empty:
+                            p = col.iloc[-1]
+                    if not np.isnan(p) and p > 0:
                         current_value[tk] = sh * float(p)
                 tradable_nav = nav_today
 
+                target_set = set(target_tickers)
+                old_set = set(current_value.keys())
+                leavers = old_set - target_set
+                entrants = target_set - old_set
+
                 turnover = 0.0
                 new_positions: dict[str, float] = {}
-                all_tk = set(current_value.keys()) | set(target_weight.keys())
-                for tk in all_tk:
-                    cur_v = current_value.get(tk, 0.0)
-                    tgt_v = target_weight.get(tk, 0.0) * tradable_nav
-                    delta_v = tgt_v - cur_v
-                    if abs(delta_v) < 1e-6:
-                        continue
-                    turnover += abs(delta_v)
-                    p = prices_wide.loc[d, tk] if tk in prices_wide.columns else np.nan
-                    if not np.isnan(p) and p > 0:
-                        if tgt_v > 0:
-                            new_positions[tk] = tgt_v / float(p)
-                        trades_rows.append({
-                            "date": d.date(), "ticker": tk,
-                            "side": "buy" if delta_v > 0 else "sell",
-                            "amount": abs(delta_v),
-                        })
-                # Keep positions that didn't change (already in target_weight at correct weight)
-                for tk in target_weight:
-                    if tk not in new_positions:
+                trade_log = []
+
+                if config.trade_mode == "replace" and positions:
+                    # Existing keepers ride: don't change their share count
+                    for tk in target_set & old_set:
+                        new_positions[tk] = positions[tk]
+                    # Sell all leavers
+                    proceeds = 0.0
+                    for tk in leavers:
+                        v = current_value.get(tk, 0.0)
+                        proceeds += v
+                        turnover += v
+                        trade_log.append({"date": d.date(), "ticker": tk, "side": "sell", "amount": v})
+                    # Buy entrants equally from proceeds
+                    if entrants:
+                        per = proceeds / len(entrants)
+                        for tk in entrants:
+                            p = prices_wide.loc[d, tk] if tk in prices_wide.columns else np.nan
+                            if not np.isnan(p) and p > 0:
+                                new_positions[tk] = per / float(p)
+                                turnover += per
+                                trade_log.append({"date": d.date(), "ticker": tk, "side": "buy", "amount": per})
+                    # NOTE: target_weight isn't used to log holdings here — log actual drifted weights
+                    if config.weighting == "composite":
+                        # Composite weighting + replace doesn't really make sense; ignore composite weights here.
+                        pass
+                else:
+                    # "rebalance" mode (full pie reset) OR first entry into the strategy from cash
+                    if config.weighting == "composite" and target_tickers:
+                        comp_lookup = dict(zip(ranked["ticker"], ranked["composite"]))
+                        weights = np.array([max(comp_lookup.get(tk, 0.0), 0.0) for tk in target_tickers])
+                        if weights.sum() == 0:
+                            weights = np.ones(len(target_tickers))
+                        weights = weights / weights.sum()
+                    else:
+                        weights = np.ones(len(target_tickers)) / max(len(target_tickers), 1)
+                    target_weight = dict(zip(target_tickers, weights))
+
+                    all_tk = old_set | target_set
+                    for tk in all_tk:
+                        cur_v = current_value.get(tk, 0.0)
+                        tgt_v = target_weight.get(tk, 0.0) * tradable_nav
+                        delta_v = tgt_v - cur_v
+                        if abs(delta_v) < 1e-6:
+                            continue
+                        turnover += abs(delta_v)
                         p = prices_wide.loc[d, tk] if tk in prices_wide.columns else np.nan
                         if not np.isnan(p) and p > 0:
-                            new_positions[tk] = (target_weight[tk] * tradable_nav) / float(p)
+                            if tgt_v > 0:
+                                new_positions[tk] = tgt_v / float(p)
+                            trade_log.append({
+                                "date": d.date(), "ticker": tk,
+                                "side": "buy" if delta_v > 0 else "sell",
+                                "amount": abs(delta_v),
+                            })
+                    # Keepers that already match target
+                    for tk in target_weight:
+                        if tk not in new_positions:
+                            p = prices_wide.loc[d, tk] if tk in prices_wide.columns else np.nan
+                            if not np.isnan(p) and p > 0:
+                                new_positions[tk] = (target_weight[tk] * tradable_nav) / float(p)
+
+                trades_rows.extend(trade_log)
 
                 # Apply transaction cost on turnover
                 tx_cost = turnover * cost_rate
                 nav_today -= tx_cost
 
-                # Rescale positions slightly so they sum to nav_today - 0 (we don't keep cash)
-                # Simpler: scale linearly
-                if new_positions:
+                # Rescale only in rebalance mode — replace mode preserves keepers' shares
+                if new_positions and config.trade_mode == "rebalance":
                     gross = sum(
                         sh * float(prices_wide.loc[d, tk])
                         for tk, sh in new_positions.items()
@@ -361,12 +406,21 @@ def run_backtest(
                 positions = new_positions
                 last_target_ranks = target_ranks
 
-                # Log holdings
+                # Log ACTUAL weights at the close of the rebalance day
+                gross_val = 0.0
+                pos_values = {}
+                for tk, sh in positions.items():
+                    p = prices_wide.loc[d, tk] if tk in prices_wide.columns else np.nan
+                    if not np.isnan(p):
+                        v = sh * float(p)
+                        pos_values[tk] = v
+                        gross_val += v
                 for tk in positions:
+                    w = (pos_values.get(tk, 0.0) / gross_val) if gross_val > 0 else np.nan
                     holdings_rows.append({
                         "date": d.date(),
                         "ticker": tk,
-                        "weight": target_weight.get(tk, np.nan),
+                        "weight": w,
                         "rank": last_target_ranks.get(tk, np.nan),
                     })
 
