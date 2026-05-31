@@ -1,14 +1,14 @@
-# Momentum Power · Top 10 · 2026-05-24
+# Momentum Power · Top 10 · 2026-05-31
 
 | # | Ticker | Name | Index | Sector | Price | RS | 52wH dist | 1y return | Composite |
 |---|--------|------|-------|--------|------:|---:|---------:|---------:|---------:|
-| 1 | `AMD` | Advanced Micro Devices | S&P 500 | Information Technology | 467.51 | 98 | 0.0% | +317.2% | 0.922 |
-| 2 | `DELL` | Dell Technologies | S&P 500 | Information Technology | 295.19 | 97 | 0.0% | +167.7% | 0.905 |
-| 3 | `LRCX` | Lam Research | S&P 500 | Information Technology | 305.35 | 97 | 0.0% | +271.5% | 0.905 |
-| 4 | `CIEN` | Ciena | S&P 500 | Information Technology | 583.74 | 98 | 1.3% | +630.4% | 0.877 |
-| 5 | `SMH.L` | VanEck Semiconductor | Thematic ETF | Semiconductors | 105.62 | 96 | 0.0% | +158.1% | 0.875 |
-| 6 | `HPE` | Hewlett Packard Enterprise | S&P 500 | Information Technology | 37.58 | 96 | 0.0% | +119.7% | 0.860 |
-| 7 | `DDOG` | Datadog | S&P 500 | Information Technology | 222.32 | 96 | 0.0% | +95.5% | 0.827 |
-| 8 | `STX` | Seagate Technology | S&P 500 | Information Technology | 812.73 | 98 | 2.6% | +688.3% | 0.825 |
-| 9 | `CSCO` | Cisco | S&P 500 | Information Technology | 120.41 | 94 | 0.0% | +94.9% | 0.807 |
-| 10 | `ON` | ON Semiconductor | S&P 500 | Information Technology | 116.20 | 97 | 1.8% | +166.1% | 0.794 |
+| 1 | `SNDK` | Sandisk | S&P 500 | Information Technology | 1694.98 | 99 | 0.0% | +4293.4% | 0.973 |
+| 2 | `WDC` | Western Digital | S&P 500 | Information Technology | 531.21 | 99 | 0.0% | +919.1% | 0.965 |
+| 3 | `MU` | Micron Technology | S&P 500 | Information Technology | 971.00 | 99 | 0.0% | +912.0% | 0.965 |
+| 4 | `DELL` | Dell Technologies | S&P 500 | Information Technology | 420.91 | 98 | 0.0% | +275.6% | 0.925 |
+| 5 | `STX` | Seagate Technology | S&P 500 | Information Technology | 879.80 | 98 | 0.1% | +659.5% | 0.922 |
+| 6 | `AMD` | Advanced Micro Devices | S&P 500 | Information Technology | 516.10 | 98 | 0.4% | +357.3% | 0.882 |
+| 7 | `HPE` | Hewlett Packard Enterprise | S&P 500 | Information Technology | 43.04 | 96 | 0.0% | +149.5% | 0.882 |
+| 8 | `DDOG` | Datadog | S&P 500 | Information Technology | 247.35 | 96 | 0.0% | +112.7% | 0.852 |
+| 9 | `NUE` | Nucor | S&P 500 | Materials | 250.00 | 94 | 0.0% | +133.2% | 0.847 |
+| 10 | `SMH.L` | VanEck Semiconductor | Thematic ETF | Semiconductors | 111.26 | 96 | 0.2% | +168.1% | 0.841 |
