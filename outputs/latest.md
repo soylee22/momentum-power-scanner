@@ -1,14 +1,14 @@
-# Momentum Power · Top 10 · 2026-06-14
+# Momentum Power · Top 10 · 2026-06-21
 
 | # | Ticker | Name | Index | Sector | Price | RS | 52wH dist | 1y return | Composite |
 |---|--------|------|-------|--------|------:|---:|---------:|---------:|---------:|
-| 1 | `SNDK` | Sandisk | S&P 500 | Information Technology | 1980.10 | 99 | 0.0% | +4821.9% | 0.957 |
-| 2 | `LRCX` | Lam Research | S&P 500 | Information Technology | 366.81 | 97 | 0.0% | +306.3% | 0.909 |
-| 3 | `AMAT` | Applied Materials | S&P 500 | Information Technology | 567.25 | 97 | 0.0% | +230.3% | 0.896 |
-| 4 | `STX` | Seagate Technology | S&P 500 | Information Technology | 931.04 | 98 | 1.0% | +645.5% | 0.874 |
-| 5 | `NUE` | Nucor | S&P 500 | Materials | 266.35 | 96 | 0.0% | +130.8% | 0.869 |
-| 6 | `STLD` | Steel Dynamics | S&P 500 | Materials | 282.76 | 96 | 0.0% | +120.4% | 0.861 |
-| 7 | `JBL` | Jabil | S&P 500 | Information Technology | 384.82 | 95 | 0.0% | +115.9% | 0.846 |
-| 8 | `JBHT` | J.B. Hunt | S&P 500 | Industrials | 289.36 | 94 | 0.0% | +107.0% | 0.828 |
-| 9 | `SMH.L` | VanEck Semiconductor | Thematic ETF | Semiconductors | 116.26 | 96 | 1.6% | +161.2% | 0.793 |
-| 10 | `IGG.L` | IG Group | FTSE 100 | Financial services | 1938.00 | 94 | 0.0% | +81.9% | 0.785 |
+| 1 | `SNDK` | Sandisk | S&P 500 | Information Technology | 2184.75 | 99 | 0.0% | +4855.2% | 0.971 |
+| 2 | `WDC` | Western Digital | S&P 500 | Information Technology | 746.23 | 99 | 0.0% | +1177.2% | 0.966 |
+| 3 | `MU` | Micron Technology | S&P 500 | Information Technology | 1133.99 | 99 | 0.0% | +844.6% | 0.960 |
+| 4 | `STX` | Seagate Technology | S&P 500 | Information Technology | 1070.23 | 98 | 0.0% | +728.3% | 0.955 |
+| 5 | `INTC` | Intel | S&P 500 | Information Technology | 133.99 | 98 | 0.0% | +544.2% | 0.950 |
+| 6 | `TER` | Teradyne | S&P 500 | Information Technology | 437.92 | 98 | 0.0% | +407.8% | 0.939 |
+| 7 | `LRCX` | Lam Research | S&P 500 | Information Technology | 389.04 | 97 | 0.0% | +322.9% | 0.929 |
+| 8 | `AMAT` | Applied Materials | S&P 500 | Information Technology | 617.11 | 97 | 0.0% | +256.6% | 0.913 |
+| 9 | `SMH.L` | VanEck Semiconductor | Thematic ETF | Semiconductors | 123.88 | 96 | 0.0% | +183.6% | 0.894 |
+| 10 | `CAT` | Caterpillar Inc. | S&P 500 | Industrials | 985.82 | 96 | 0.0% | +178.6% | 0.884 |
