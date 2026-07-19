@@ -2,11 +2,11 @@
 
 Reads all snapshots from data/history/, renders a single static HTML
 page in the Palantir aesthetic with four tabs:
-  - Top 10:       latest headline names, click-through to per-ticker chart
-  - Watchlist:    all Stage 2 survivors beyond the top 10 (ranks 11+),
+  - Top 100:      latest headline names, click-through to per-ticker chart
+  - Watchlist:    Stage 2 survivors beyond the headline (ranks 101+),
                   sortable + filterable
-  - Persistence:  every ticker that has ever made the top 10, with
-                  weeks-in-top-10, best rank, current rank, and a
+  - Persistence:  every ticker that has ever made the headline list, with
+                  weeks-in-list, best rank, current rank, and a
                   composite-trajectory sparkline
   - Breadth:      survivor-count line chart over time (market breadth tell)
 """
@@ -23,6 +23,37 @@ HISTORY_DIR = ROOT / "data" / "history"
 OUTPUTS_CHARTS = ROOT / "outputs" / "charts"
 DOCS = ROOT / "docs"
 DOCS_CHARTS = DOCS / "charts"
+
+# Keep in sync with scanner.DEFAULT_TOP_N
+DEFAULT_TOP_N = 100
+
+
+def _headline_n(snap: dict) -> int:
+    """Headline list size for a snapshot (default 100; older snaps may differ)."""
+    n = snap.get("top_n")
+    if n is not None:
+        try:
+            return max(1, int(n))
+        except (TypeError, ValueError):
+            pass
+    return DEFAULT_TOP_N
+
+
+def _headline_rows(snap: dict) -> list[dict]:
+    """Top-N composite rows for the main list.
+
+    Prefer the full survivor pool (always ranked) so older snapshots that only
+    stored 10 headline rows still expand to top 100 on rebuild.
+    """
+    n = _headline_n(snap)
+    survivors = snap.get("survivors") or []
+    if survivors:
+        ordered = sorted(
+            survivors,
+            key=lambda r: int(r.get("rank_overall") or 10**9),
+        )
+        return ordered[:n]
+    return list(snap.get("top10") or [])[:n]
 
 
 def _load_snapshots() -> list[dict]:
@@ -55,16 +86,25 @@ def _index_glyph(idx: str) -> str:
 
 
 def _persistence(snaps: list[dict]) -> list[dict]:
-    """For every ticker that has appeared in top 10 across all snapshots,
-    return a summary row with weeks-in-top-10, best rank, current rank
-    (or None if dropped), last seen date, and composite trajectory."""
+    """For every ticker that has appeared in the headline list across snapshots,
+    return weeks-in-list, best rank, current rank, last seen, trajectory.
+
+    Threshold is per-snapshot headline size (100 now; 10 on older weeks that
+    only stored a short top10 without a full survivors pool).
+    """
     if not snaps:
         return []
     by_ticker: dict[str, dict] = {}
     for snap in snaps:
         asof = snap["asof"]
-        items = snap.get("survivors") or snap.get("top10") or []
+        n = _headline_n(snap)
+        # Older snaps may only have top10 (10 rows) and no survivors — use that.
+        items = _headline_rows(snap) if snap.get("survivors") else (snap.get("top10") or [])
+        # For persistence counting, treat rank <= n as "in headline" that week.
         for r in items:
+            rank = r.get("rank_overall")
+            if rank is None or int(rank) > n:
+                continue
             tk = r["ticker"]
             row = by_ticker.setdefault(tk, {
                 "ticker": tk,
@@ -75,32 +115,44 @@ def _persistence(snaps: list[dict]) -> list[dict]:
             })
             row["appearances"].append({
                 "asof": asof,
-                "rank": r.get("rank_overall"),
+                "rank": rank,
                 "composite": r.get("composite"),
             })
 
     latest_asof = snaps[-1]["asof"]
+    latest_n = _headline_n(snaps[-1])
     rows: list[dict] = []
     for info in by_ticker.values():
         apps = info["appearances"]
-        weeks_in_top10 = sum(1 for a in apps if a["rank"] and a["rank"] <= 10)
-        if weeks_in_top10 == 0:
+        weeks_in_list = len(apps)
+        if weeks_in_list == 0:
             continue
         ranks = [a["rank"] for a in apps if a["rank"]]
         best_rank = min(ranks) if ranks else None
         last_app = apps[-1]
-        currently_present = last_app["asof"] == latest_asof
-        current_rank = last_app["rank"] if currently_present else None
+        currently_present = last_app["asof"] == latest_asof and (
+            last_app["rank"] is not None and int(last_app["rank"]) <= latest_n
+        )
+        # If last appearance isn't this week, check latest survivors for current rank.
+        current_rank = None
+        if last_app["asof"] == latest_asof:
+            current_rank = last_app["rank"]
+        else:
+            for r in _headline_rows(snaps[-1]):
+                if r.get("ticker") == info["ticker"]:
+                    current_rank = r.get("rank_overall")
+                    currently_present = True
+                    break
         trajectory = [a["composite"] for a in apps if a["composite"] is not None]
         rows.append({
             "ticker": info["ticker"],
             "name": info["name"],
             "sector": info["sector"],
             "index": info["index"],
-            "weeks_in_top10": weeks_in_top10,
+            "weeks_in_top10": weeks_in_list,  # field name kept for template BC
             "total_appearances": len(apps),
             "best_rank": best_rank,
-            "current_rank": current_rank,
+            "current_rank": current_rank if currently_present else None,
             "last_seen": last_app["asof"],
             "trajectory": trajectory,
         })
@@ -233,13 +285,16 @@ def _pct(x) -> str:
 
 
 def _top10_card(latest: dict) -> str:
+    headline = _headline_rows(latest)
+    n = len(headline)
     rows_html = []
-    for r in latest.get("top10", []):
-        flag = _index_glyph(r["index"])
+    for r in headline:
+        flag = _index_glyph(r.get("index") or "")
         ticker_id = r["ticker"].replace(".", "_")
+        rank = int(r["rank_overall"])
         rows_html.append(f"""
           <tr>
-            <td class="rank">{int(r['rank_overall']):02d}</td>
+            <td class="rank">{rank:02d}</td>
             <td class="ticker">
               <a href="charts/{ticker_id}.png">
                 <span class="tk">{r['ticker']}</span>
@@ -258,7 +313,7 @@ def _top10_card(latest: dict) -> str:
     rows = "\n".join(rows_html)
     return f"""
     <div class="card">
-      <h2>The list</h2>
+      <h2>The list · top {n}</h2>
       <div class="card-sub">
         RS, 52wH dist and 1Y are the raw inputs. The three columns under
         <span class="tag">COMPONENTS</span> are within-survivors percentile ranks (0-100)
@@ -290,11 +345,12 @@ def _top10_card(latest: dict) -> str:
     """
 
 
-def _watchlist_card(watchlist_json: str, survivors: int) -> str:
+def _watchlist_card(watchlist_json: str, survivors: int, after_rank: int) -> str:
+    start = after_rank + 1
     return f"""
     <div class="lightcard" id="watchlist">
-      <h2>Watchlist · ranks 11 to {survivors}</h2>
-      <div class="sub">All Stage 2 survivors beyond the top 10. Sortable, filterable. Click a column header to sort.</div>
+      <h2>Watchlist · ranks {start} to {survivors}</h2>
+      <div class="sub">All Stage 2 survivors beyond the top {after_rank}. Sortable, filterable. Click a column header to sort.</div>
       <div class="controls">
         <input type="search" id="wl-search" placeholder="Filter by ticker, name, sector...">
         <select id="wl-index">
@@ -359,16 +415,16 @@ def _persistence_card(rows: list[dict]) -> str:
     body = "\n".join(row_html)
     return f"""
     <div class="lightcard">
-      <h2>Persistence · weeks in top 10</h2>
+      <h2>Persistence · weeks in top {DEFAULT_TOP_N}</h2>
       <div class="sub">
-        Every ticker that has reached the top 10 at any weekly scan. Sparkline shows composite score across all appearances. "Now" = current top-10 rank, or "dropped" if not in this week's headline ten.
+        Every ticker that has reached the headline list at any weekly scan. Sparkline shows composite score across all appearances. "Now" = current headline rank, or "dropped" if not in this week's top {DEFAULT_TOP_N}.
       </div>
       <table>
         <thead>
           <tr>
             <th>TICKER</th>
             <th>NAME</th>
-            <th class="right">WEEKS IN T10</th>
+            <th class="right">WEEKS IN LIST</th>
             <th class="right">BEST</th>
             <th class="right">NOW</th>
             <th>TRAJECTORY</th>
@@ -601,7 +657,12 @@ def render_dashboard() -> Path:
     DOCS.mkdir(parents=True, exist_ok=True)
     DOCS_CHARTS.mkdir(parents=True, exist_ok=True)
 
+    # Sync charts: drop stale names so docs/ only has this week's headline set.
     if OUTPUTS_CHARTS.exists():
+        wanted = {p.name for p in OUTPUTS_CHARTS.glob("*.png")}
+        for stale in DOCS_CHARTS.glob("*.png"):
+            if stale.name not in wanted:
+                stale.unlink()
         for src in OUTPUTS_CHARTS.glob("*.png"):
             shutil.copy(src, DOCS_CHARTS / src.name)
 
@@ -611,15 +672,19 @@ def render_dashboard() -> Path:
     universe = latest["universe_size"]
     survivors = latest["survivor_count"]
     rate = (survivors / universe * 100) if universe else 0.0
+    headline_n = _headline_n(latest)
+    headline = _headline_rows(latest)
 
     # Sections
     top10_section = _top10_card(latest)
 
     survivors_full = latest.get("survivors") or []
-    watchlist = [r for r in survivors_full if int(r.get("rank_overall", 0)) > 10]
+    watchlist = [
+        r for r in survivors_full if int(r.get("rank_overall", 0)) > headline_n
+    ]
     watchlist_json = json.dumps(watchlist, default=float)
     watchlist_section = (
-        _watchlist_card(watchlist_json, survivors)
+        _watchlist_card(watchlist_json, survivors, after_rank=headline_n)
         if watchlist
         else """
         <div class="lightcard">
@@ -1057,11 +1122,12 @@ def render_dashboard() -> Path:
 <body>
   <div class="page">
     <span class="chip">MOMENTUM POWER&nbsp;&nbsp;|&nbsp;&nbsp;{latest['asof']}</span>
-    <h1>Top 10 momentum names this week.</h1>
+    <h1>Top {headline_n} momentum names this week.</h1>
     <p class="lede">
       Stage 2 trend-template survivors, ranked by composite IBD-style relative
       strength, 52-week-high proximity, and one-year return. Local-currency
-      returns. US + UK equities with market cap ≥ $1bn.
+      returns. US + UK equities with market cap ≥ $1bn. Headline list is the
+      top {headline_n} by composite; full survivor pool is on the Watchlist tab.
     </p>
 
     <hr/>
@@ -1073,7 +1139,7 @@ def render_dashboard() -> Path:
     </div>
 
     <div class="tabs">
-      <button class="tab-btn active" data-tab="list">Top 10</button>
+      <button class="tab-btn active" data-tab="list">Top {headline_n}</button>
       <button class="tab-btn" data-tab="watchlist">Watchlist</button>
       <button class="tab-btn" data-tab="persistence">Persistence</button>
       <button class="tab-btn" data-tab="breadth">Breadth</button>

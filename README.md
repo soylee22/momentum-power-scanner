@@ -1,6 +1,6 @@
 # Momentum Power Scanner
 
-Weekly scanner that screens **US + UK equities with market cap ≥ $1bn** for **Mark Minervini Stage 2 Trend Template** survivors, ranks them by an **IBD-style relative strength** composite, and publishes the **top 10 momentum names** as a Gmail digest, GitHub Pages dashboard, and per-ticker Palantir-aesthetic charts.
+Weekly scanner that screens **US + UK equities with market cap ≥ $1bn** for **Mark Minervini Stage 2 Trend Template** survivors, ranks them by an **IBD-style relative strength** composite, and publishes the **top 100 momentum names** (digest email still highlights top 10) as a Gmail digest, GitHub Pages dashboard, and per-ticker charts.
 
 Built to mirror the methodology behind retail systematic-momentum portfolios such as Benson212's *US Momentum Power* T212 pie. Independent: this is its own scanner, not derived from any third-party feed.
 
@@ -33,7 +33,7 @@ For each survivor, take the **percentile rank within the survivor pool** of:
 - 52-week-high proximity (closer = higher)
 - 1-year total return
 
-Composite = mean of those three ranks. **Top 10 by composite.**
+Composite = mean of those three ranks. **Top 100 by composite** (headline list).
 
 ### 4. Outputs each run
 

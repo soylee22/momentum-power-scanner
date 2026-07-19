@@ -1,7 +1,7 @@
 """Main pipeline orchestrator.
 
 Universe -> prices -> features -> RS rating -> Minervini gates ->
-survivor pool -> composite rank -> top 10 -> persist + render
+survivor pool -> composite rank -> top N -> persist + render
 charts + dashboard + email digest.
 """
 from __future__ import annotations
@@ -25,6 +25,10 @@ from .universe import load_universe
 ROOT = Path(__file__).resolve().parent.parent.parent
 OUTPUTS = ROOT / "outputs"
 HISTORY_DIR = ROOT / "data" / "history"
+
+# Headline list size (dashboard / CSV / charts). Digest still emails a short top 10.
+DEFAULT_TOP_N = 100
+DIGEST_TOP_N = 10
 
 console = Console()
 
@@ -52,7 +56,7 @@ def _dedupe_share_classes(survivors: pd.DataFrame) -> pd.DataFrame:
     return df.drop(columns=["_base_name"]).sort_index()
 
 
-def run(asof: dt.date | None = None, top_n: int = 10) -> dict:
+def run(asof: dt.date | None = None, top_n: int = DEFAULT_TOP_N) -> dict:
     asof = asof or dt.date.today()
     console.rule(f"[bold]Momentum Power Scan · asof {asof.isoformat()}")
 
@@ -128,7 +132,7 @@ def run(asof: dt.date | None = None, top_n: int = 10) -> dict:
         )
 
     if survivors.empty:
-        console.print("[red]No Stage 2 survivors this week. Saving an empty top 10.[/]")
+        console.print(f"[red]No Stage 2 survivors this week. Saving an empty top {top_n}.[/]")
         ranked = pd.DataFrame()
     else:
         ranked = rank_composite(survivors)
@@ -146,7 +150,7 @@ def run(asof: dt.date | None = None, top_n: int = 10) -> dict:
 
     if not top.empty:
         top.to_csv(OUTPUTS / "latest.csv", index=False)
-        _write_markdown(top, OUTPUTS / "latest.md", asof)
+        _write_markdown(top, OUTPUTS / "latest.md", asof, top_n=top_n)
 
     snapshot_cols = [
         "rank_overall", "ticker", "name", "sector", "country", "index",
@@ -154,26 +158,30 @@ def run(asof: dt.date | None = None, top_n: int = 10) -> dict:
         "return_3m", "return_6m", "return_12m",
         "rank_rs", "rank_prox", "rank_1yr", "composite",
     ]
-    # Persist the FULL ranked survivor pool, not just the top 10. The top 10
-    # is the headline; the deeper list (ranks 11 to ~survivors_count) is the
-    # near-miss watchlist and gets surfaced on the dashboard for filtering.
+    # Headline list = top_n (default 100). Full survivor pool is also saved for
+    # the watchlist (ranks top_n+1 … N). Key stays "top10" for history BC;
+    # it now holds the full headline slice (not only 10 rows).
+    top_records = (
+        top[[c for c in snapshot_cols if c not in ("return_3m", "return_6m")]]
+        .to_dict(orient="records")
+        if not top.empty else []
+    )
     snapshot = {
         "asof": asof.isoformat(),
         "universe_size": int(len(df)),
         "survivor_count": int(len(survivors)),
-        "top10": top[
-            [c for c in snapshot_cols if c not in ("return_3m", "return_6m")]
-        ].to_dict(orient="records") if not top.empty else [],
+        "top_n": int(top_n),
+        "top10": top_records,
         "survivors": ranked[
             [c for c in snapshot_cols if c in ranked.columns]
         ].to_dict(orient="records") if not ranked.empty else [],
     }
     snap_path = HISTORY_DIR / f"{asof.isoformat()}.json"
     snap_path.write_text(json.dumps(snapshot, indent=2, default=float))
-    console.print(f"  snapshot -> {snap_path.relative_to(ROOT)}")
+    console.print(f"  snapshot -> {snap_path.relative_to(ROOT)}  (top {len(top_records)})")
 
-    # 7. Render top 10 in console
-    _print_top(top)
+    # 7. Render headline table in console (first 20 if long)
+    _print_top(top, top_n=top_n)
 
     return {"asof": asof, "top": top, "survivors": survivors, "all": df}
 
@@ -188,9 +196,9 @@ def _index_short(index, country=None) -> str:
     return (idx[:6] if idx else "?")
 
 
-def _write_markdown(top: pd.DataFrame, path: Path, asof: dt.date) -> None:
+def _write_markdown(top: pd.DataFrame, path: Path, asof: dt.date, top_n: int = DEFAULT_TOP_N) -> None:
     lines = [
-        f"# Momentum Power · Top 10 · {asof.isoformat()}",
+        f"# Momentum Power · Top {top_n} · {asof.isoformat()}",
         "",
         "| # | Ticker | Name | Index | Sector | Price | RS | 52wH dist | 1y return | Composite |",
         "|---|--------|------|-------|--------|------:|---:|---------:|---------:|---------:|",
@@ -206,10 +214,14 @@ def _write_markdown(top: pd.DataFrame, path: Path, asof: dt.date) -> None:
     path.write_text("\n".join(lines))
 
 
-def _print_top(top: pd.DataFrame) -> None:
+def _print_top(top: pd.DataFrame, top_n: int = DEFAULT_TOP_N) -> None:
     if top.empty:
         return
-    table = Table(title="Top 10 by composite momentum", show_lines=False, header_style="bold")
+    show = top.head(min(20, len(top)))
+    title = f"Top {top_n} by composite momentum"
+    if len(top) > len(show):
+        title += f" (showing first {len(show)})"
+    table = Table(title=title, show_lines=False, header_style="bold")
     table.add_column("#", justify="right")
     table.add_column("Ticker")
     table.add_column("Name", max_width=28)
@@ -219,7 +231,7 @@ def _print_top(top: pd.DataFrame) -> None:
     table.add_column("52wH dist", justify="right")
     table.add_column("1y", justify="right")
     table.add_column("Composite", justify="right")
-    for _, r in top.iterrows():
+    for _, r in show.iterrows():
         table.add_row(
             str(int(r["rank_overall"])),
             r["ticker"],

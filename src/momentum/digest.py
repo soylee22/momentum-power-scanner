@@ -126,9 +126,10 @@ def render_digest_html(snap: dict, prev: dict | None, dashboard_url: str) -> str
     asof = snap["asof"]
     universe = snap["universe_size"]
     survivors = snap["survivor_count"]
-    top = snap["top10"]
+    # Email stays short: first 10 of the headline list (full top 100 is on the dashboard).
+    top = list(snap.get("top10") or [])[:10]
 
-    prev_top = prev["top10"] if prev else []
+    prev_top = list((prev or {}).get("top10") or [])[:10]
     change = _classify_change(top, prev_top)
 
     rows = []

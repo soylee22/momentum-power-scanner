@@ -113,7 +113,7 @@ def render_top_charts(top: pd.DataFrame, full_table: pd.DataFrame) -> None:
     for f in CHART_DIR.glob("*.png"):
         f.unlink()
 
-    # Use cached prices if present, otherwise fetch fresh just for the top 10.
+    # Use cached prices if present, otherwise fetch fresh for the headline list.
     tickers = top["ticker"].tolist()
     prices = load_prices(tickers)
 

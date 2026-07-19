@@ -6,7 +6,7 @@ Mean of three percentile ranks within the survivor pool:
   - 52-week-high proximity  (closer = higher; we rank -1 * dist_from_high)
   - 1-year total return     (in local currency)
 
-Top 10 by composite.
+Headline top-N by composite (default 100 in the scanner).
 """
 from __future__ import annotations
 
@@ -33,5 +33,5 @@ def rank_composite(survivors: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def top_n(survivors: pd.DataFrame, n: int = 10) -> pd.DataFrame:
+def top_n(survivors: pd.DataFrame, n: int = 100) -> pd.DataFrame:
     return rank_composite(survivors).head(n).copy()
