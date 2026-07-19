@@ -275,7 +275,7 @@
     <h1>How the scanner finds the top 10.</h1>
     <p class="lede">
       A plain-English walkthrough of every step the scanner takes between
-      <em>"here is the S&amp;P 500 plus the FTSE 100"</em> and
+      <em>"here are US and UK stocks above $1bn market cap"</em> and
       <em>"here are the ten strongest momentum names this week."</em>
       No black boxes. No tuned parameters. Just three filters, three rankings,
       and one number that tells you who is leading.
@@ -309,7 +309,7 @@
     <div class="card">
       <p class="dim" style="margin-bottom:8px; font-size:11px; letter-spacing:0.10em; text-transform:uppercase;">PIPELINE</p>
       <ol class="bullets" style="margin-top:8px;">
-        <li>Pull the constituents of the S&amp;P 500 and FTSE 100 from Wikipedia.</li>
+        <li>Build the universe: Yahoo Finance screener for US + UK equities with market cap ≥ $1bn.</li>
         <li>Download 14 months of daily prices for each ticker.</li>
         <li>Compute relative strength and trend-template features for every stock.</li>
         <li>Apply the eight Minervini gates. Survivors continue, the rest are filtered out.</li>
@@ -324,15 +324,23 @@
     <span class="section-label">02 / The universe</span>
     <h2>Where the candidates come from.</h2>
     <p>
-      The scanner pulls from two indices: the <span class="em">S&amp;P 500</span>
-      (about 500 large-cap US stocks) and the <span class="em">FTSE 100</span>
-      (the 100 largest UK-listed stocks). That is roughly 600 names in total.
+      The hard floor is <span class="em">$1bn market capitalisation</span>.
+      Below that, liquidity and gap risk get worse on a retail platform, and
+      the Stage 2 template starts picking up thin names that do not behave
+      like the mid/large-cap momentum book this scanner is built for.
     </p>
     <p>
-      Why these two? Three reasons. Index membership is a basic liquidity filter
-      (you can actually buy these on Trading 212). The constituents are public
-      and free to scrape from Wikipedia. And it gives a UK investor a fair shot
-      at FTSE-listed momentum names that purely-US scanners miss.
+      Both legs come from the <span class="em">Yahoo Finance equity screener</span>
+      (via yfinance): region US on the main Nasdaq/NYSE/AMEX boards, region GB
+      on the LSE, market cap ≥ $1bn. Preferreds, warrants, notes, and LSE
+      international (digit-prefixed) lines are dropped. Yahoo’s own floor
+      leaks a little at the tail, so the scanner re-checks market cap on
+      every quote.
+    </p>
+    <p>
+      A small set of curated LSE alts (physical gold/silver, sector and factor
+      ETFs) sits outside the cap filter so commodities and factor legs can
+      still surface when they trend.
     </p>
     <p>
       <strong>Returns are computed in local currency</strong> (USD for US
@@ -537,8 +545,8 @@
 
     <h3>Step 2: the percentile rank</h3>
     <p>
-      The weighted return is then ranked across the full universe of 600+
-      stocks. A stock with a weighted return better than 95% of all other
+      The weighted return is then ranked across the full universe of
+      ~2.5–3k stocks. A stock with a weighted return better than 95% of all other
       stocks gets an RS rating of 95. A median stock gets 50. The worst
       stocks get 1.
     </p>

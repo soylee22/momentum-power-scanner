@@ -32,9 +32,9 @@ def _load_snapshots() -> list[dict]:
 
 def _index_glyph(idx: str) -> str:
     """Map index/asset class -> emoji glyph for the dashboard tables."""
-    if idx == "S&P 500":
+    if idx in ("S&P 500", "US $1bn+") or (idx or "").startswith("US"):
         return "\U0001F1FA\U0001F1F8"  # 🇺🇸
-    if idx == "FTSE 100":
+    if idx in ("FTSE 100", "FTSE 250", "UK $1bn+") or (idx or "").startswith(("FTSE", "UK")):
         return "\U0001F1EC\U0001F1E7"  # 🇬🇧
     if idx == "Commodity ETF":
         return "\U0001F947"            # 🥇 gold medal
@@ -42,6 +42,8 @@ def _index_glyph(idx: str) -> str:
         return "\U0001F4A1"            # 💡 idea / theme
     if idx == "Sector ETF":
         return "\U0001F4CA"            # 📊 sector
+    if idx == "Factor ETF":
+        return "\u2696"                # ⚖ factor
     if idx == "Crypto ETF":
         return "₿"                     # bitcoin sign
     return "•"
@@ -297,8 +299,8 @@ def _watchlist_card(watchlist_json: str, survivors: int) -> str:
         <input type="search" id="wl-search" placeholder="Filter by ticker, name, sector...">
         <select id="wl-index">
           <option value="">All indices</option>
-          <option value="S&amp;P 500">S&amp;P 500</option>
-          <option value="FTSE 100">FTSE 100</option>
+          <option value="US $1bn+">US $1bn+</option>
+          <option value="UK $1bn+">UK $1bn+</option>
         </select>
         <select id="wl-sector"><option value="">All sectors</option></select>
       </div>
@@ -472,11 +474,11 @@ def _method_card() -> str:
       </div>
 
       <div class="pipeline">
-        <span class="step">Universe<br><span class="muted">S&amp;P 500 + FTSE 100 (~601 names)</span></span>
+        <span class="step">Universe<br><span class="muted">Yahoo US + UK equities ≥ $1bn</span></span>
         <span class="arrow">&rarr;</span>
         <span class="step">Stage 2 gate<br><span class="muted">8 binary Minervini tests, all must pass</span></span>
         <span class="arrow">&rarr;</span>
-        <span class="step">Survivor pool<br><span class="muted">~120-140 names this week</span></span>
+        <span class="step">Survivor pool<br><span class="muted">survivors this week</span></span>
         <span class="arrow">&rarr;</span>
         <span class="step gold">Composite rank<br><span class="muted">the equation below</span></span>
       </div>
@@ -573,7 +575,7 @@ def _breadth_card(breadth_data: list[dict]) -> str:
     <div class="lightcard">
       <h2>Breadth · Stage 2 survivors over time</h2>
       <div class="sub">
-        How many of ~{latest['universe_size']} S&amp;P 500 + FTSE 100 names pass all 8 Minervini gates each week. Rising = healthy trend market with broad participation. Falling = narrowing leadership.
+        How many of ~{latest['universe_size']} US + UK names (≥ $1bn market cap) pass all 8 Minervini gates each week. Rising = healthy trend market with broad participation. Falling = narrowing leadership.
       </div>
       <div class="chart-wrap">{chart}</div>
       <div class="breadth-meta">
@@ -1059,7 +1061,7 @@ def render_dashboard() -> Path:
     <p class="lede">
       Stage 2 trend-template survivors, ranked by composite IBD-style relative
       strength, 52-week-high proximity, and one-year return. Local-currency
-      returns. S&amp;P 500 + FTSE 100 universe.
+      returns. US + UK equities with market cap ≥ $1bn.
     </p>
 
     <hr/>
@@ -1198,8 +1200,11 @@ def render_dashboard() -> Path:
         emptyEl.style.display = rows.length ? 'none' : 'block';
         tbody.innerHTML = rows.map(r => {{
           const flag = (
-            r.index === 'S&P 500'      ? '\U0001F1FA\U0001F1F8' :
-            r.index === 'FTSE 100'     ? '\U0001F1EC\U0001F1E7' :
+            (r.index === 'S&P 500' || r.index === 'US $1bn+' || (r.index || '').startsWith('US'))
+              ? '\U0001F1FA\U0001F1F8' :
+            (r.index === 'UK $1bn+' || r.index === 'FTSE 100' || r.index === 'FTSE 250'
+              || (r.index || '').startsWith('FTSE') || (r.index || '').startsWith('UK'))
+              ? '\U0001F1EC\U0001F1E7' :
             r.index === 'Commodity ETF'? '\U0001F947' :
             r.index === 'Crypto ETF'   ? '₿' :
             '•'

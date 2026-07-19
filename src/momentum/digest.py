@@ -67,7 +67,14 @@ def _classify_change(curr_top: list[dict], prev_top: list[dict]) -> dict:
 
 
 def _row_html(r: dict, rank_delta: int | None, is_new: bool) -> str:
-    flag = "🇺🇸" if r["index"] == "S&P 500" else "🇬🇧"
+    idx = str(r.get("index") or "")
+    country = str(r.get("country") or "")
+    if idx in ("S&P 500", "US $1bn+") or idx.startswith("US") or country == "US":
+        flag = "🇺🇸"
+    elif idx.startswith(("UK", "FTSE")) or country == "UK" or "ETF" in idx:
+        flag = "🇬🇧"
+    else:
+        flag = "•"
     if is_new:
         arrow = '<span style="color:%s; font-weight:700; font-size:10px; letter-spacing:0.1em;">NEW</span>' % PL.accent_green
     elif rank_delta is None or rank_delta == 0:
@@ -178,7 +185,7 @@ def render_digest_html(snap: dict, prev: dict | None, dashboard_url: str) -> str
                     font-size:15px; line-height:1.5; margin:18px 0 0;">
             Stage 2 trend-template survivors, ranked by composite IBD-style
             relative strength, 52-week-high proximity, and one-year return.
-            Local-currency returns. S&amp;P 500 + FTSE 100 universe.
+            Local-currency returns. US + UK equities ≥ $1bn market cap.
           </p>
         </td></tr>
 

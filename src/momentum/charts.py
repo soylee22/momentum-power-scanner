@@ -121,7 +121,7 @@ def render_top_charts(top: pd.DataFrame, full_table: pd.DataFrame) -> None:
         tk = r["ticker"]
         if tk not in prices:
             continue
-        idx_label = "S&P 500" if r.get("index") == "S&P 500" else "FTSE 100"
+        idx_label = str(r.get("index") or r.get("country") or "")
         _draw_one(
             tk,
             prices[tk],

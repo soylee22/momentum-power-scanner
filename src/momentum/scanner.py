@@ -58,9 +58,14 @@ def run(asof: dt.date | None = None, top_n: int = 10) -> dict:
 
     # 1. Universe
     universe = load_universe()
-    console.print(f"Universe: {len(universe)} tickers "
-                  f"({(universe['index'] == 'S&P 500').sum()} S&P, "
-                  f"{(universe['index'] == 'FTSE 100').sum()} FTSE)")
+    us_n = int((universe["country"] == "US").sum()) if "country" in universe.columns else 0
+    uk_n = int(
+        ((universe["country"] == "UK") & ~universe["index"].astype(str).str.contains("ETF", na=False)).sum()
+    ) if "country" in universe.columns else 0
+    console.print(
+        f"Universe: {len(universe)} tickers "
+        f"(US {us_n}, UK {uk_n}; Yahoo ≥ $1bn)"
+    )
 
     # 2. Prices
     console.print("Fetching prices (this can take a few minutes the first time)...")
@@ -110,8 +115,8 @@ def run(asof: dt.date | None = None, top_n: int = 10) -> dict:
     survivors = df[df["stage2"]].copy()
     console.print(
         f"  Stage 2 survivors: [bold green]{len(survivors)}[/] / {len(df)}  "
-        f"({(survivors['index'] == 'S&P 500').sum()} S&P, "
-        f"{(survivors['index'] == 'FTSE 100').sum()} FTSE)"
+        f"(US {(survivors['country'] == 'US').sum() if 'country' in survivors.columns else '?'}, "
+        f"UK {(survivors['country'] == 'UK').sum() if 'country' in survivors.columns else '?'})"
     )
 
     survivors_before_dedupe = len(survivors)
@@ -173,6 +178,16 @@ def run(asof: dt.date | None = None, top_n: int = 10) -> dict:
     return {"asof": asof, "top": top, "survivors": survivors, "all": df}
 
 
+def _index_short(index, country=None) -> str:
+    """Compact index label for console table."""
+    idx = str(index or "")
+    if country == "US" or idx.startswith("US") or idx == "S&P 500":
+        return "US"
+    if country == "UK" or idx.startswith(("UK", "FTSE")) or idx.endswith("ETF"):
+        return "UK"
+    return (idx[:6] if idx else "?")
+
+
 def _write_markdown(top: pd.DataFrame, path: Path, asof: dt.date) -> None:
     lines = [
         f"# Momentum Power · Top 10 · {asof.isoformat()}",
@@ -209,7 +224,7 @@ def _print_top(top: pd.DataFrame) -> None:
             str(int(r["rank_overall"])),
             r["ticker"],
             str(r.get("name", "")),
-            "US" if r.get("index") == "S&P 500" else "UK",
+            _index_short(r.get("index"), r.get("country")),
             str(r.get("sector", "")),
             f"{r['rs_rating']:.0f}",
             f"{r['dist_from_high'] * 100:.1f}%",

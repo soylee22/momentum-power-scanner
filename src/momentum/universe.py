@@ -1,148 +1,237 @@
-"""S&P 500 + FTSE 100 constituent fetcher with weekly disk cache.
+"""Equity universe: every US + UK stock Yahoo lists at ≥ $1bn market cap.
 
-Reads Wikipedia (single source we know is structured + reliable + free).
-Cached as parquet at data/cache/universe.parquet, refreshed if older than 7 days.
+Source: yfinance EquityQuery screener (Yahoo Finance), paginated.
+  - US: region=us, exchanges NMS/NYQ/ASE/NGM/NCM
+  - UK: region=gb, exchange LSE
+  - Hard floor: marketCap ≥ $1bn (post-filter; Yahoo's own floor is leaky)
+  - Drop preferreds / warrants / notes and other non-common junk
+  - Curated LSE alts (metals, factors) kept outside the cap filter
+
+Cached as parquet at data/universe.parquet, refreshed if older than 7 days.
 """
 from __future__ import annotations
 
 import datetime as dt
-import io
+import re
+import time
 from pathlib import Path
 
 import pandas as pd
-import requests
+from yfinance import EquityQuery, screen
 
 ROOT = Path(__file__).resolve().parent.parent.parent
 CACHE_PATH = ROOT / "data" / "universe.parquet"
 CACHE_TTL_DAYS = 7
 
-_HEADERS = {
-    "User-Agent": "momentum-power-scanner/0.1 (personal research; +github.com/soylee22)"
-}
+MIN_MARKET_CAP_USD = 1_000_000_000  # $1bn hard floor
+_SCREEN_PAGE = 250  # Yahoo hard max per request
+_SCREEN_PAUSE_S = 0.12
 
-SP500_URL = "https://en.wikipedia.org/wiki/List_of_S%26P_500_companies"
-FTSE100_URL = "https://en.wikipedia.org/wiki/FTSE_100_Index"
+# Primary US equity venues (skip OTC / pinks / weird boards).
+_US_EXCHANGES = ("NMS", "NYQ", "ASE", "NGM", "NCM")
+_UK_EXCHANGES = ("LSE",)
+
+_EXCLUDE_NAME_RE = re.compile(
+    r"(?i)\b("
+    r"preferred|preference|warrant|warrants|right|rights|"
+    r"unit(?!ed)|units|"
+    r"note|notes|debenture|debentures|bond|bonds|"
+    r"etf|etn|etp"
+    r")\b"
+)
+# Preferred depositary / coupon paper that slips past the simple word list.
+_EXCLUDE_NAME_RE2 = re.compile(
+    r"(?i)("
+    r"depositary shares each representing|"
+    r"fixed[- ]rate senior notes|"
+    r"subordinated debentures|"
+    r"cumulative redeemable|"
+    r"%\s*(series|fixed|senior|subordinated|cum)"
+    r")"
+)
+# US preferred tickers: FOO-PA, FOO-PB, FOO-P. Not FOO-A (class A common).
+_US_PREFERRED_TICKER_RE = re.compile(r"-[P][A-Z]?$")
+# LSE international / order-book lines often start with a digit (e.g. 0DJN.L).
+_UK_INTL_TICKER_RE = re.compile(r"^\d")
 
 
-def _read_wiki_tables(url: str) -> list[pd.DataFrame]:
-    r = requests.get(url, headers=_HEADERS, timeout=30)
-    r.raise_for_status()
-    return pd.read_html(io.StringIO(r.text))
+def _is_common_equity_name(name: str) -> bool:
+    if not name or not str(name).strip():
+        return False
+    n = str(name)
+    if _EXCLUDE_NAME_RE.search(n):
+        return False
+    if _EXCLUDE_NAME_RE2.search(n):
+        return False
+    return True
 
 
-def _fetch_sp500() -> pd.DataFrame:
-    tables = _read_wiki_tables(SP500_URL)
-    df = tables[0].copy()
-    df = df.rename(columns={
-        "Symbol": "ticker",
-        "Security": "name",
-        "GICS Sector": "sector",
-        "GICS Sub-Industry": "industry",
-    })
-    df["ticker"] = df["ticker"].str.replace(".", "-", regex=False)  # BRK.B -> BRK-B for yfinance
-    df["exchange"] = "NYSE/NASDAQ"
-    df["country"] = "US"
-    df["currency"] = "USD"
-    df["index"] = "S&P 500"
-    return df[["ticker", "name", "sector", "industry", "exchange", "country", "currency", "index"]]
+def _screen_page(query: EquityQuery, offset: int, size: int = _SCREEN_PAGE) -> dict:
+    return screen(
+        query,
+        offset=offset,
+        size=size,
+        sortField="intradaymarketcap",
+        sortAsc=False,
+    )
 
 
-def _flatten_columns(t: pd.DataFrame) -> pd.DataFrame:
-    """Collapse MultiIndex columns down to single strings."""
-    t = t.copy()
-    if isinstance(t.columns, pd.MultiIndex):
-        t.columns = [
-            " ".join([str(c) for c in col if str(c) != "nan"]).strip()
-            for col in t.columns.values
-        ]
+def _equity_query(region: str, exchanges: tuple[str, ...]) -> EquityQuery:
+    ops = [
+        EquityQuery("gte", ["intradaymarketcap", MIN_MARKET_CAP_USD]),
+        EquityQuery("eq", ["region", region]),
+    ]
+    if len(exchanges) == 1:
+        ops.append(EquityQuery("eq", ["exchange", exchanges[0]]))
     else:
-        t.columns = [str(c) for c in t.columns]
-    return t
+        ops.append(EquityQuery("is-in", ["exchange", *exchanges]))
+    return EquityQuery("and", ops)
 
 
-def _fetch_ftse100() -> pd.DataFrame:
-    tables = _read_wiki_tables(FTSE100_URL)
-    # The constituents table shape on Wikipedia varies; pick the one with a "Ticker" column.
-    df = None
-    for raw in tables:
-        t = _flatten_columns(raw)
-        cols_lower = [c.lower() for c in t.columns]
-        if any("ticker" in c or "epic" in c for c in cols_lower) and any(
-            "company" in c or "name" in c for c in cols_lower
-        ):
-            df = t
+def _fetch_yahoo_region(
+    region: str,
+    exchanges: tuple[str, ...],
+    *,
+    country: str,
+    currency: str,
+    index_label: str,
+) -> pd.DataFrame:
+    """Paginate Yahoo's equity screener for one region and normalise rows."""
+    query = _equity_query(region, exchanges)
+    offset = 0
+    raw: list[dict] = []
+    total: int | None = None
+
+    while True:
+        resp = _screen_page(query, offset=offset)
+        if total is None:
+            total = int(resp.get("total") or 0)
+        quotes = resp.get("quotes") or []
+        if not quotes:
             break
-    if df is None:
-        raise RuntimeError("FTSE 100 constituents table not found on Wikipedia page")
+        raw.extend(quotes)
+        offset += len(quotes)
+        print(f"  Yahoo {region.upper()}: {len(raw)}/{total or '?'}")
+        if total and offset >= total:
+            break
+        if len(quotes) < _SCREEN_PAGE:
+            break
+        time.sleep(_SCREEN_PAUSE_S)
 
-    # Normalise columns (Wikipedia sometimes uses "EPIC", sometimes "Ticker")
-    rename = {}
-    seen_ticker = seen_name = seen_sector = False
-    for c in df.columns:
-        cl = c.lower()
-        if not seen_ticker and ("ticker" in cl or "epic" in cl or cl == "code"):
-            rename[c] = "ticker"
-            seen_ticker = True
-        elif not seen_name and ("company" in cl or "constituent" in cl or "name" in cl):
-            rename[c] = "name"
-            seen_name = True
-        elif not seen_sector and "sector" in cl:
-            rename[c] = "sector"
-            seen_sector = True
-    df = df.rename(columns=rename)
+    rows: list[dict] = []
+    for q in raw:
+        symbol = str(q.get("symbol") or "").strip()
+        if not symbol:
+            continue
+        if (q.get("quoteType") or "EQUITY").upper() != "EQUITY":
+            continue
 
-    if "sector" not in df.columns:
-        df["sector"] = ""
-    df["industry"] = df["sector"]
+        mc = q.get("marketCap")
+        try:
+            market_cap = float(mc) if mc is not None else 0.0
+        except (TypeError, ValueError):
+            market_cap = 0.0
+        # Yahoo's gte filter leaks at the tail — enforce the floor ourselves.
+        if market_cap < MIN_MARKET_CAP_USD:
+            continue
 
-    df = df[["ticker", "name", "sector", "industry"]].copy()
-    # FTSE tickers on yfinance need .L; Wikipedia drops the suffix.
-    df["ticker"] = df["ticker"].astype(str).str.upper().str.replace(".", "-", regex=False) + ".L"
-    df["exchange"] = "LSE"
-    df["country"] = "UK"
-    df["currency"] = "GBP"  # Most FTSE 100 stocks quote in GBp (pence) but yfinance returns pence; we treat returns as % so this is fine.
-    df["index"] = "FTSE 100"
-    return df
+        name = (
+            str(q.get("longName") or q.get("shortName") or q.get("displayName") or "")
+            .strip()
+        )
+        if not _is_common_equity_name(name):
+            continue
+        if not _is_common_equity_name(str(q.get("shortName") or "")):
+            continue
+
+        base = symbol[:-2] if symbol.endswith(".L") else symbol
+        if country == "US" and _US_PREFERRED_TICKER_RE.search(base):
+            continue
+        if country == "UK" and _UK_INTL_TICKER_RE.search(symbol):
+            continue
+
+        sector = str(q.get("sector") or "").strip() or "Unknown"
+        industry = str(q.get("industry") or "").strip() or sector
+        exchange = str(q.get("fullExchangeName") or q.get("exchange") or "").strip()
+
+        rows.append({
+            "ticker": symbol,
+            "name": name,
+            "sector": sector,
+            "industry": industry,
+            "exchange": exchange or ("LSE" if country == "UK" else "NYSE/NASDAQ"),
+            "country": country,
+            "currency": str(q.get("currency") or currency),
+            "index": index_label,
+            "market_cap": market_cap,
+        })
+
+    df = pd.DataFrame(rows)
+    if df.empty:
+        raise RuntimeError(f"Yahoo {region} screener returned 0 names after filters")
+    return df.drop_duplicates("ticker", keep="first").reset_index(drop=True)
+
+
+def _fetch_us() -> pd.DataFrame:
+    return _fetch_yahoo_region(
+        "us",
+        _US_EXCHANGES,
+        country="US",
+        currency="USD",
+        index_label="US $1bn+",
+    )
+
+
+def _fetch_uk() -> pd.DataFrame:
+    return _fetch_yahoo_region(
+        "gb",
+        _UK_EXCHANGES,
+        country="UK",
+        currency="GBP",
+        index_label="UK $1bn+",
+    )
 
 
 def _extras() -> pd.DataFrame:
-    """Curated alts that aren't in the equity indices but trade on the LSE
-    and are eligible for the Stage 2 trend filter the same way any other
-    instrument with a daily price series is. Physical-backed ETCs only.
-
-    Lee's request: gold + silver in the scanner so commodities can show
-    up alongside equities when they're trending.
-    """
+    """Curated LSE alts (outside the equity market-cap filter)."""
     rows = [
-        # Precious metals — physical-backed iShares ETCs, GBP-denominated.
-        # All three available on Trading 212 (Lee's broker).
-        ("SGLN.L", "iShares Physical Gold",       "Precious Metals",      "Commodity ETF"),
-        ("SSLN.L", "iShares Physical Silver",     "Precious Metals",      "Commodity ETF"),
-        ("SPLT.L", "iShares Physical Platinum",   "Precious Metals",      "Commodity ETF"),
-        # Thematic / sub-sector — let the scanner surface these when they're trending.
-        ("SMH.L",  "VanEck Semiconductor",        "Semiconductors",       "Thematic ETF"),
-        ("DFND.L", "Future Generations Defence",  "Aerospace & Defence",  "Thematic ETF"),
-        # Missing GICS sectors — full sector coverage so themes can compete with stocks.
-        ("IUFS.L", "iShares S&P 500 Financials",  "Financials",           "Sector ETF"),
-        ("IUCM.L", "iShares S&P 500 Comm Services","Communication Services","Sector ETF"),
-        ("IUUS.L", "iShares S&P 500 Utilities",   "Utilities",            "Sector ETF"),
-        ("IUSP.L", "iShares S&P 500 Real Estate", "Real Estate",          "Sector ETF"),
-        # MarketFighter factor basket — let the live scanner show today's pick.
-        ("IUMO.L", "iShares Edge MSCI USA Momentum",  "Factor",  "Factor ETF"),
-        ("IUQA.L", "iShares Edge MSCI USA Quality",   "Factor",  "Factor ETF"),
-        ("IUVL.L", "iShares Edge MSCI USA Value",     "Factor",  "Factor ETF"),
-        ("CUS1.L", "iShares S&P 600 Small Cap",       "Factor",  "Factor ETF"),
-        ("IEMO.L", "iShares Edge MSCI Europe Momentum","Factor", "Factor ETF"),
-        ("IEQU.L", "iShares Edge MSCI Europe Quality","Factor",  "Factor ETF"),
-        ("IEVL.L", "iShares Edge MSCI Europe Value",  "Factor",  "Factor ETF"),
-        ("WSML.L", "iShares MSCI World Small Cap",    "Factor",  "Factor ETF"),
+        ("SGLN.L", "iShares Physical Gold", "Precious Metals", "Commodity ETF"),
+        ("SSLN.L", "iShares Physical Silver", "Precious Metals", "Commodity ETF"),
+        ("SPLT.L", "iShares Physical Platinum", "Precious Metals", "Commodity ETF"),
+        ("SMH.L", "VanEck Semiconductor", "Semiconductors", "Thematic ETF"),
+        ("DFND.L", "Future Generations Defence", "Aerospace & Defence", "Thematic ETF"),
+        ("IUFS.L", "iShares S&P 500 Financials", "Financials", "Sector ETF"),
+        ("IUCM.L", "iShares S&P 500 Comm Services", "Communication Services", "Sector ETF"),
+        ("IUUS.L", "iShares S&P 500 Utilities", "Utilities", "Sector ETF"),
+        ("IUSP.L", "iShares S&P 500 Real Estate", "Real Estate", "Sector ETF"),
+        ("IUMO.L", "iShares Edge MSCI USA Momentum", "Factor", "Factor ETF"),
+        ("IUQA.L", "iShares Edge MSCI USA Quality", "Factor", "Factor ETF"),
+        ("IUVL.L", "iShares Edge MSCI USA Value", "Factor", "Factor ETF"),
+        ("CUS1.L", "iShares S&P 600 Small Cap", "Factor", "Factor ETF"),
+        ("IEMO.L", "iShares Edge MSCI Europe Momentum", "Factor", "Factor ETF"),
+        ("IEQU.L", "iShares Edge MSCI Europe Quality", "Factor", "Factor ETF"),
+        ("IEVL.L", "iShares Edge MSCI Europe Value", "Factor", "Factor ETF"),
+        ("WSML.L", "iShares MSCI World Small Cap", "Factor", "Factor ETF"),
     ]
     df = pd.DataFrame(rows, columns=["ticker", "name", "sector", "index"])
     df["industry"] = df["sector"]
     df["exchange"] = "LSE"
     df["country"] = "UK"
     df["currency"] = "GBP"
-    return df[["ticker", "name", "sector", "industry", "exchange", "country", "currency", "index"]]
+    df["market_cap"] = float("nan")
+    return df[
+        [
+            "ticker",
+            "name",
+            "sector",
+            "industry",
+            "exchange",
+            "country",
+            "currency",
+            "index",
+            "market_cap",
+        ]
+    ]
 
 
 def _cache_is_fresh() -> bool:
@@ -153,26 +242,36 @@ def _cache_is_fresh() -> bool:
 
 
 def load_universe(force_refresh: bool = False) -> pd.DataFrame:
-    """Return the combined S&P 500 + FTSE 100 + alts universe.
+    """Return US + UK equities with market cap ≥ $1bn, plus curated alts.
 
     Cached for 7 days.
     """
     if not force_refresh and _cache_is_fresh():
         return pd.read_parquet(CACHE_PATH)
 
-    sp = _fetch_sp500()
-    ft = _fetch_ftse100()
+    print(f"  building universe via Yahoo screener (min cap ${MIN_MARKET_CAP_USD / 1e9:.0f}bn)...")
+    us = _fetch_us()
+    print(f"  US ≥ $1bn: {len(us)}")
+    uk = _fetch_uk()
+    print(f"  UK ≥ $1bn: {len(uk)}")
     alt = _extras()
-    combined = pd.concat([sp, ft, alt], ignore_index=True).drop_duplicates("ticker")
+
+    combined = pd.concat([us, uk, alt], ignore_index=True).drop_duplicates("ticker")
     CACHE_PATH.parent.mkdir(parents=True, exist_ok=True)
     combined.to_parquet(CACHE_PATH, index=False)
+    print(f"  universe total: {len(combined)} tickers")
     return combined
 
 
 def main() -> None:
     df = load_universe(force_refresh=True)
-    print(f"Loaded {len(df)} tickers ({(df['index'] == 'S&P 500').sum()} S&P, "
-          f"{(df['index'] == 'FTSE 100').sum()} FTSE)")
+    us_n = int((df["country"] == "US").sum())
+    uk_eq = int(
+        ((df["country"] == "UK") & ~df["index"].astype(str).str.contains("ETF")).sum()
+    )
+    alt_n = int(df["index"].astype(str).str.contains("ETF").sum())
+    print(f"Loaded {len(df)} tickers (US {us_n}, UK equities {uk_eq}, alts {alt_n})")
+    print(df["index"].value_counts().to_string())
     print(df.head())
 
 

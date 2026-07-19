@@ -1,15 +1,18 @@
 # Momentum Power Scanner
 
-Weekly scanner that screens **S&P 500 + FTSE 100** for **Mark Minervini Stage 2 Trend Template** survivors, ranks them by an **IBD-style relative strength** composite, and publishes the **top 10 momentum names** as a Gmail digest, GitHub Pages dashboard, and per-ticker Palantir-aesthetic charts.
+Weekly scanner that screens **US + UK equities with market cap ≥ $1bn** for **Mark Minervini Stage 2 Trend Template** survivors, ranks them by an **IBD-style relative strength** composite, and publishes the **top 10 momentum names** as a Gmail digest, GitHub Pages dashboard, and per-ticker Palantir-aesthetic charts.
 
 Built to mirror the methodology behind retail systematic-momentum portfolios such as Benson212's *US Momentum Power* T212 pie. Independent: this is its own scanner, not derived from any third-party feed.
 
 ## Methodology
 
 ### 1. Universe
-- **S&P 500** (Wikipedia constituents, cached weekly)
-- **FTSE 100** (Wikipedia constituents, `.L` suffix for yfinance)
-- ~600 names. Returns computed in **local currency** (USD/GBP) so FX noise does not pollute the momentum signal.
+- **Yahoo Finance equity screener**: every US + UK stock with **market cap ≥ $1bn**.
+  - US: `region=us`, exchanges NMS / NYQ / ASE / NGM / NCM
+  - UK: `region=gb`, exchange LSE
+- Preferreds / warrants / notes and LSE international (digit-prefixed) lines dropped.
+- Curated LSE alts (metals, sector/factor ETFs) kept outside the cap filter.
+- Returns in **local currency** (USD/GBP) so FX noise does not pollute the momentum signal.
 
 ### 2. Filter — Minervini Stage 2 Trend Template (8 binary gates)
 All must pass.
@@ -60,7 +63,7 @@ GitHub Actions cron `0 21 * * 0` — Sunday 21:00 UTC (after Friday US close, be
 ```
 src/momentum/
   palantir.py        Vendored Palantir style tokens (matplotlib + CSS palette)
-  universe.py        S&P 500 + FTSE 100 ticker fetch (Wikipedia, weekly cache)
+  universe.py        US+UK ≥ $1bn via Yahoo screener (weekly cache)
   fetch.py           yfinance batch download with parquet cache
   minervini.py       8 trend-template gates, returns boolean + per-gate dict
   rs_rating.py       IBD-style RS rating (1-99 percentile)
