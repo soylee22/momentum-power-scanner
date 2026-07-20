@@ -42,8 +42,8 @@
 | 38 | `ETON` | Eton Pharmaceuticals, Inc. | US $1bn+ | Health Care | 42.32 | 97 | 0.0% | +203.4% | 20.2 | 0.766 |
 | 39 | `RAPP` | Rapport Therapeutics, Inc. | US $1bn+ | Health Care | 42.62 | 92 | 0.0% | +187.2% | 27.5 | 0.765 |
 | 40 | `IMOS` | ChipMOS TECHNOLOGIES INC. | US $1bn+ | Technology | 68.81 | 97 | 9.2% | +276.8% | 68.5 | 0.758 |
-| 41 | `DINO` | HF Sinclair Corporation | US $1bn+ | Energy | 88.59 | 94 | 0.0% | +110.2% | 28.3 | 0.750 |
-| 42 | `CALY` | Callaway Golf Company | US $1bn+ | Consumer Discretionary | 19.38 | 91 | 1.4% | +106.2% | 44.3 | 0.750 |
+| 41 | `CALY` | Callaway Golf Company | US $1bn+ | Consumer Discretionary | 19.38 | 91 | 1.4% | +106.2% | 44.3 | 0.750 |
+| 42 | `DINO` | HF Sinclair Corporation | US $1bn+ | Energy | 88.59 | 94 | 0.0% | +110.2% | 28.3 | 0.750 |
 | 43 | `NWPX` | NWPX Infrastructure, Inc. | US $1bn+ | Industrials | 138.20 | 97 | 7.8% | +234.8% | 53.4 | 0.748 |
 | 44 | `CHRN` | ChronoScale Holdings Corporation | US $1bn+ | Industrials | 26.43 | 99 | 10.8% | +608.6% | 51.1 | 0.747 |
 | 45 | `HCSG` | Healthcare Services Group, Inc. | US $1bn+ | Health Care | 25.31 | 88 | 0.0% | +94.8% | 36.3 | 0.746 |
@@ -69,8 +69,8 @@
 | 65 | `UGP` | Ultrapar Participações S.A. | US $1bn+ | Utilities | 6.25 | 87 | 0.0% | +113.3% | 31.5 | 0.722 |
 | 66 | `JBHT` | J.B. Hunt Transport Services, Inc. | US $1bn+ | Industrials | 291.41 | 90 | 2.3% | +92.3% | 56.6 | 0.722 |
 | 67 | `MAAS` | Maase Inc. | US $1bn+ | Finance | 19.76 | 99 | 7.0% | +391.5% | 35.2 | 0.718 |
-| 68 | `ALMS` | Alumis Inc. | US $1bn+ | Health Care | 28.66 | 98 | 5.4% | +716.5% | 32.1 | 0.717 |
-| 69 | `TRVI` | Trevi Therapeutics, Inc. | US $1bn+ | Health Care | 19.07 | 94 | 2.2% | +178.8% | 31.6 | 0.717 |
+| 68 | `TRVI` | Trevi Therapeutics, Inc. | US $1bn+ | Health Care | 19.07 | 94 | 2.2% | +178.8% | 31.6 | 0.717 |
+| 69 | `ALMS` | Alumis Inc. | US $1bn+ | Health Care | 28.66 | 98 | 5.4% | +716.5% | 32.1 | 0.717 |
 | 70 | `MPC` | Marathon Petroleum Corporation | US $1bn+ | Energy | 312.60 | 92 | 0.0% | +82.3% | 29.2 | 0.713 |
 | 71 | `INNV` | InnovAge Holding Corp. | US $1bn+ | Health Care | 11.50 | 95 | 5.0% | +171.9% | 37.8 | 0.712 |
 | 72 | `OII` | Oceaneering International, Inc. | US $1bn+ | Energy | 42.28 | 90 | 2.3% | +105.3% | 45.4 | 0.712 |
