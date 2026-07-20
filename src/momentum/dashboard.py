@@ -284,6 +284,18 @@ def _pct(x) -> str:
         return "—"
 
 
+def _k_ratio_cell(x) -> str:
+    if x is None:
+        return "—"
+    try:
+        v = float(x)
+        if v != v:  # NaN
+            return "—"
+        return f"{v:.1f}"
+    except Exception:
+        return "—"
+
+
 def _top10_card(latest: dict) -> str:
     headline = _headline_rows(latest)
     n = len(headline)
@@ -304,9 +316,11 @@ def _top10_card(latest: dict) -> str:
             <td class="num">{r['rs_rating']:.0f}</td>
             <td class="num">{r['dist_from_high']*100:.1f}%</td>
             <td class="num accent">+{r['return_12m']*100:.0f}%</td>
+            <td class="num">{_k_ratio_cell(r.get('k_ratio'))}</td>
             <td class="num comp-rs">{_pct(r.get('rank_rs'))}</td>
             <td class="num comp-prox">{_pct(r.get('rank_prox'))}</td>
             <td class="num comp-1y">{_pct(r.get('rank_1yr'))}</td>
+            <td class="num comp-k">{_pct(r.get('rank_k'))}</td>
             <td class="num composite">{r['composite']:.3f}</td>
           </tr>
         """)
@@ -315,10 +329,10 @@ def _top10_card(latest: dict) -> str:
     <div class="card">
       <h2>The list · top {n}</h2>
       <div class="card-sub">
-        RS, 52wH dist and 1Y are the raw inputs. The three columns under
+        RS, 52wH dist, 1Y and K-ratio are the raw inputs. The four columns under
         <span class="tag">COMPONENTS</span> are within-survivors percentile ranks (0-100)
-        feeding the composite — that's why a phenomenal 1Y return can still rank low if its
-        proximity-to-high or RS percentile lag the pool. See the <em>Method</em> tab.
+        feeding the composite. K-ratio (Kestner) is path consistency — a one-off spike
+        can still post a huge 1Y return but will lag on K. See the <em>Method</em> tab.
       </div>
       <div class="table-wrap">
       <table>
@@ -329,13 +343,15 @@ def _top10_card(latest: dict) -> str:
             <th class="right" rowspan="2">RS</th>
             <th class="right" rowspan="2">52wH dist</th>
             <th class="right" rowspan="2">1Y</th>
-            <th class="right group" colspan="3">COMPONENTS (percentile)</th>
+            <th class="right" rowspan="2">K</th>
+            <th class="right group" colspan="4">COMPONENTS (percentile)</th>
             <th class="right" rowspan="2">COMPOSITE</th>
           </tr>
           <tr>
             <th class="right sub">RS rk</th>
             <th class="right sub">Prox rk</th>
             <th class="right sub">1Y rk</th>
+            <th class="right sub">K rk</th>
           </tr>
         </thead>
         <tbody>{rows}</tbody>
@@ -371,9 +387,11 @@ def _watchlist_card(watchlist_json: str, survivors: int, after_rank: int) -> str
             <th class="right" data-key="rs_rating">RS</th>
             <th class="right" data-key="dist_from_high">52wH DIST</th>
             <th class="right" data-key="return_12m">1Y</th>
+            <th class="right" data-key="k_ratio">K</th>
             <th class="right" data-key="rank_rs">RS RK</th>
             <th class="right" data-key="rank_prox">PROX RK</th>
             <th class="right" data-key="rank_1yr">1Y RK</th>
+            <th class="right" data-key="rank_k">K RK</th>
             <th class="right" data-key="composite">COMPOSITE</th>
           </tr>
         </thead>
@@ -513,20 +531,13 @@ def _marketfighter_card() -> str:
 
 
 def _method_card() -> str:
-    """Annotated breakdown of how the composite score is computed.
-
-    Equation, three colour-coded terms each with a hand-drawn SVG brace
-    pointing down to a card explaining what the term means and how it's
-    computed. Plus the Stage 2 gate pipeline above so the whole picture
-    is on one tab.
-    """
+    """Annotated breakdown of how the composite score is computed."""
     return """
     <div class="lightcard method-card">
       <h2>How the composite score is calculated</h2>
       <div class="sub">
         Every Stage&nbsp;2 survivor each week is scored by a single number — the composite.
-        It's the equal-weight mean of three within-pool percentile ranks. Click a term to
-        highlight what it pulls in.
+        It's the equal-weight mean of <strong>four</strong> within-pool percentile ranks.
       </div>
 
       <div class="pipeline">
@@ -540,78 +551,58 @@ def _method_card() -> str:
       </div>
 
       <div class="formula-stage">
-        <div class="formula">
+        <div class="formula" style="font-size:22px;">
           <span class="lhs">composite<sub>i</sub></span>
           <span class="eq">=</span>
           <div class="frac">
             <div class="numer">
-              <span class="term term-rs" data-term="rs">rank<sub>RS</sub><sup>(i)</sup></span>
+              <span class="term term-rs">rank<sub>RS</sub></span>
               <span class="plus">+</span>
-              <span class="term term-prox" data-term="prox">rank<sub>prox</sub><sup>(i)</sup></span>
+              <span class="term term-prox">rank<sub>prox</sub></span>
               <span class="plus">+</span>
-              <span class="term term-1y" data-term="1y">rank<sub>1y</sub><sup>(i)</sup></span>
+              <span class="term term-1y">rank<sub>1y</sub></span>
+              <span class="plus">+</span>
+              <span class="term term-k">rank<sub>K</sub></span>
             </div>
-            <div class="denom">3</div>
+            <div class="denom">4</div>
           </div>
         </div>
 
-        <svg class="braces" viewBox="0 0 720 70" preserveAspectRatio="none" aria-hidden="true">
-          <path d="M  40 4 Q  40 28 100 28 Q 160 28 160 50" class="brace brace-rs"/>
-          <path d="M 270 4 Q 270 28 330 28 Q 390 28 390 50" class="brace brace-prox"/>
-          <path d="M 500 4 Q 500 28 560 28 Q 620 28 620 50" class="brace brace-1y"/>
-        </svg>
-
-        <div class="term-cards">
-          <div class="term-card term-rs" data-term="rs">
+        <div class="term-cards" style="grid-template-columns:repeat(2,1fr);">
+          <div class="term-card term-rs">
             <span class="badge">RS<sub>rk</sub></span>
-            <h3>IBD-style Relative Strength percentile</h3>
-            <ol>
-              <li>For every name in the full universe, compute a weighted blend of 3m, 6m, 9m, 12m total returns: weights <code>2&middot;r<sub>3</sub> + r<sub>6</sub> + r<sub>9</sub> + r<sub>12</sub></code>. Front-loads the recent quarter.</li>
-              <li>Rank that blend across the universe, scale to 1-99. That's the raw <em>RS rating</em> column.</li>
-              <li>Then take the percentile <strong>within the survivor pool</strong> only. That percentile (0-1) is what enters the composite.</li>
-            </ol>
-            <p class="why">Captures multi-horizon momentum strength.</p>
+            <h3>IBD-style Relative Strength</h3>
+            <p>Weighted blend of 3m/6m/9m/12m returns (front-loaded), percentile-ranked across the full universe to 1–99, then re-ranked within survivors.</p>
           </div>
-
-          <div class="term-card term-prox" data-term="prox">
+          <div class="term-card term-prox">
             <span class="badge">prox<sub>rk</sub></span>
-            <h3>52-week-high proximity percentile</h3>
-            <ol>
-              <li>Distance from 52-week high: <code>(high<sub>52w</sub> &minus; price) / high<sub>52w</sub></code>. Lower number = closer to high.</li>
-              <li>Within the survivor pool, rank by <em>negative</em> distance &mdash; so closer-to-high gets a higher percentile.</li>
-            </ol>
-            <p class="why">Distinguishes mature breakouts from over-extended runs. A name at the very high gets ~1.0 here; one already 25% off ATH gets penalised.</p>
+            <h3>52-week-high proximity</h3>
+            <p>Distance from 52-week high. Closer to the high ranks higher. Penalises faded former leaders.</p>
           </div>
-
-          <div class="term-card term-1y" data-term="1y">
+          <div class="term-card term-1y">
             <span class="badge">1y<sub>rk</sub></span>
-            <h3>One-year return percentile</h3>
-            <ol>
-              <li>Total return over the trailing 252 trading days, local currency.</li>
-              <li>Rank within the survivor pool, take the percentile.</li>
-            </ol>
-            <p class="why">Anchors the score in actual capital gain magnitude. A name up 80% over a year out-ranks one up 35%, all else equal &mdash; but only at the margin, because RS already captures a lot of this.</p>
+            <h3>One-year return</h3>
+            <p>Total return over 252 trading days, local currency. Anchors the score in capital gain magnitude.</p>
+          </div>
+          <div class="term-card term-k">
+            <span class="badge">K<sub>rk</sub></span>
+            <h3>K-ratio (path consistency)</h3>
+            <p>Kestner K-ratio: fit <code>log(price) = a + b·t</code> over 252 days, take <code>b / se(b)</code> (trend-slope t-stat). A smooth grind scores high; a one-off spike then chop scores low even if total 1Y return is huge.</p>
           </div>
         </div>
 
         <div class="why-block">
-          <h3>Why phenomenal 1Y returns can rank lower</h3>
+          <h3>Why the K-ratio is there</h3>
           <p>
-            The three components are equal-weighted. A name with a stellar 1Y return but extended (high <em>dist-from-high</em>) or with mediocre 3-9m strength will see its <em>prox<sub>rk</sub></em> and <em>RS<sub>rk</sub></em> sit in the middle of the pool. Average those three and the composite lands lower than its 1Y headline suggests.
-          </p>
-          <p>
-            Concretely &mdash; a Stage 2 survivor up 110% over the year but already 22% off ATH might score:
-            <code>RS<sub>rk</sub> = 0.55</code>, <code>prox<sub>rk</sub> = 0.20</code>, <code>1y<sub>rk</sub> = 0.90</code> &rarr; composite <code>0.55</code>. A boring "only" +28% name pinned to its high might score
-            <code>0.60 / 0.95 / 0.30</code> &rarr; composite <code>0.62</code> and rank above it.
-          </p>
-          <p>
-            This is by design. The scanner is hunting <strong>persistent momentum still in trend</strong>, not the year's biggest gainers regardless of where they are now.
+            RS and 1Y both care about <em>how much</em> a stock moved. They do not care about the path.
+            A biotech that was flat for 11 months then doubled in a week can top a pure-return sort.
+            The K-ratio asks whether the climb was consistent. Equal-weighting it with the other three
+            is what keeps one-off P moves from owning the board.
           </p>
         </div>
       </div>
     </div>
     """
-
 
 def _breadth_card(breadth_data: list[dict]) -> str:
     if not breadth_data:
@@ -866,9 +857,14 @@ def render_dashboard() -> Path:
     .comp-rs   {{ color: #C8923D; }}
     .comp-prox {{ color: #6E8FC6; }}
     .comp-1y   {{ color: #7CA678; }}
+    .comp-k    {{ color: #B07CA6; }}
     .card .comp-rs   {{ color: #E4B36C; }}
     .card .comp-prox {{ color: #9BB6E0; }}
     .card .comp-1y   {{ color: #A8CFA3; }}
+    .card .comp-k    {{ color: #D0A0C6; }}
+    .term-k {{ color: #B07CA6; }}
+    .term-card.term-k {{ border-top: 3px solid #B07CA6; }}
+    .term-card.term-k .badge {{ background: #B07CA6; color: var(--bone); }}
     td.composite {{ font-weight: 600; }}
 
     .card-sub {{
@@ -1288,9 +1284,11 @@ def render_dashboard() -> Path:
             '<td class="num">' + fmtInt(r.rs_rating) + '</td>' +
             '<td class="num">' + fmtPct(r.dist_from_high) + '</td>' +
             '<td class="' + retCls + '">' + retStr + '</td>' +
+            '<td class="num">' + (r.k_ratio == null || isNaN(r.k_ratio) ? '—' : Number(r.k_ratio).toFixed(1)) + '</td>' +
             '<td class="num comp-rs">' + pctRk(r.rank_rs) + '</td>' +
             '<td class="num comp-prox">' + pctRk(r.rank_prox) + '</td>' +
             '<td class="num comp-1y">' + pctRk(r.rank_1yr) + '</td>' +
+            '<td class="num comp-k">' + pctRk(r.rank_k) + '</td>' +
             '<td class="num composite">' + fmtNum3(r.composite) + '</td>' +
           '</tr>';
         }}).join('');

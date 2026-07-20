@@ -105,6 +105,7 @@ def run(asof: dt.date | None = None, top_n: int = DEFAULT_TOP_N) -> dict:
             "return_6m": f.return_6m,
             "return_9m": f.return_9m,
             "return_12m": f.return_12m,
+            "k_ratio": f.k_ratio,
             "rs_rating": rs_score,
             "stage2": all(gates.values()),
             "gates_passed": int(sum(gates.values())),
@@ -154,9 +155,9 @@ def run(asof: dt.date | None = None, top_n: int = DEFAULT_TOP_N) -> dict:
 
     snapshot_cols = [
         "rank_overall", "ticker", "name", "sector", "country", "index",
-        "price", "rs_rating", "dist_from_high",
+        "price", "rs_rating", "dist_from_high", "k_ratio",
         "return_3m", "return_6m", "return_12m",
-        "rank_rs", "rank_prox", "rank_1yr", "composite",
+        "rank_rs", "rank_prox", "rank_1yr", "rank_k", "composite",
     ]
     # Headline list = top_n (default 100). Full survivor pool is also saved for
     # the watchlist (ranks top_n+1 … N). Key stays "top10" for history BC;
@@ -200,16 +201,18 @@ def _write_markdown(top: pd.DataFrame, path: Path, asof: dt.date, top_n: int = D
     lines = [
         f"# Momentum Power · Top {top_n} · {asof.isoformat()}",
         "",
-        "| # | Ticker | Name | Index | Sector | Price | RS | 52wH dist | 1y return | Composite |",
-        "|---|--------|------|-------|--------|------:|---:|---------:|---------:|---------:|",
+        "| # | Ticker | Name | Index | Sector | Price | RS | 52wH dist | 1y return | K-ratio | Composite |",
+        "|---|--------|------|-------|--------|------:|---:|---------:|---------:|--------:|---------:|",
     ]
     for _, r in top.iterrows():
+        k = r.get("k_ratio", float("nan"))
+        k_s = f"{k:.1f}" if k == k else "—"
         lines.append(
             f"| {int(r['rank_overall'])} | `{r['ticker']}` | {r.get('name', '')} | "
             f"{r.get('index', '')} | {r.get('sector', '')} | "
             f"{r['price']:.2f} | {r['rs_rating']:.0f} | "
             f"{r['dist_from_high'] * 100:.1f}% | {r['return_12m'] * 100:+.1f}% | "
-            f"{r['composite']:.3f} |"
+            f"{k_s} | {r['composite']:.3f} |"
         )
     path.write_text("\n".join(lines))
 

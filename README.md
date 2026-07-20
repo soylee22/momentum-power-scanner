@@ -32,8 +32,9 @@ For each survivor, take the **percentile rank within the survivor pool** of:
 - IBD-style RS rating (`0.4·r3m + 0.2·r6m + 0.2·r9m + 0.2·r12m`, then percentile-ranked across the full universe)
 - 52-week-high proximity (closer = higher)
 - 1-year total return
+- **K-ratio** (Kestner): `slope / se(slope)` of `log(price)` vs time over 252 days — path consistency, robust to one-off spikes
 
-Composite = mean of those three ranks. **Top 100 by composite** (headline list).
+Composite = mean of those four ranks. **Top 100 by composite** (headline list).
 
 ### 4. Outputs each run
 

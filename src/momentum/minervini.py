@@ -36,6 +36,48 @@ class TrendFeatures:
     return_6m: float
     return_9m: float
     return_12m: float
+    k_ratio: float = float("nan")
+
+
+def k_ratio_from_closes(close: np.ndarray, window: int = 252) -> float:
+    """Kestner-style K-ratio: consistency of the price path.
+
+    Fit log(price) = a + b·t over the last `window` bars and return
+    b / se(b) — the t-stat of the trend slope.
+
+    A name that grinded higher every month scores high. A name that was
+    flat then spiked once (or spiked then chopped) scores low even if
+    total 1Y return is huge. That is the whole point: robust against
+    one-off P moves.
+    """
+    if close is None or len(close) < 60:
+        return float("nan")
+    y_raw = close[-window:] if len(close) >= window else close
+    if (y_raw <= 0).any():
+        return float("nan")
+    y = np.log(y_raw.astype(float))
+    n = len(y)
+    if n < 60:
+        return float("nan")
+    x = np.arange(n, dtype=float)
+    x_c = x - x.mean()
+    y_c = y - y.mean()
+    ss_xx = float(np.dot(x_c, x_c))
+    if ss_xx <= 0:
+        return float("nan")
+    slope = float(np.dot(x_c, y_c) / ss_xx)
+    intercept = float(y.mean() - slope * x.mean())
+    resid = y - (intercept + slope * x)
+    dof = n - 2
+    if dof <= 0:
+        return float("nan")
+    mse = float(np.dot(resid, resid) / dof)
+    if mse <= 0 or not np.isfinite(mse):
+        return float("nan")
+    se = float(np.sqrt(mse / ss_xx))
+    if se <= 0 or not np.isfinite(se):
+        return float("nan")
+    return slope / se
 
 
 def features_from_prices(ticker: str, prices: pd.DataFrame) -> TrendFeatures | None:
@@ -79,6 +121,7 @@ def features_from_prices(ticker: str, prices: pd.DataFrame) -> TrendFeatures | N
         return_6m=_ret(126),
         return_9m=_ret(189),
         return_12m=_ret(252),
+        k_ratio=k_ratio_from_closes(close, window=252),
     )
 
 
