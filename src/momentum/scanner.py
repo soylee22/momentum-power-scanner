@@ -149,6 +149,19 @@ def run(asof: dt.date | None = None, top_n: int = DEFAULT_TOP_N) -> dict:
         ["stage2", "rs_rating"], ascending=[False, False]
     ).to_parquet(OUTPUTS / "scored_universe.parquet", index=False)
 
+    # Slim public sidecar for Own the Machine Weekly. This exposes the true
+    # broad-universe RS/gate result without requiring that project to parse the
+    # parquet snapshot or re-scan thousands of securities.
+    rs_export = df[[
+        "ticker", "name", "country", "index", "rs_rating", "stage2", "gates_passed",
+        "g1_price_above_150_200", "g2_sma150_above_sma200",
+        "g3_sma200_trending_up", "g4_sma50_above_150_200",
+        "g5_price_above_sma50", "g6_30pct_above_52w_low",
+        "g7_within_25pct_of_52w_high", "g8_rs_rating_ge_70",
+    ]].copy()
+    rs_export.insert(0, "asof", asof.isoformat())
+    rs_export.to_csv(OUTPUTS / "rs_universe.csv", index=False)
+
     if not top.empty:
         top.to_csv(OUTPUTS / "latest.csv", index=False)
         _write_markdown(top, OUTPUTS / "latest.md", asof, top_n=top_n)
