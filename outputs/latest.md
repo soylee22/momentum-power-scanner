@@ -1,104 +1,104 @@
-# Momentum Power · Top 100 · 2026-09-27
+# Momentum Power · Top 100 · 2026-10-04
 
 | # | Ticker | Name | Index | Sector | Price | RS | 52wH dist | 1y return | K-ratio | Composite |
 |---|--------|------|-------|--------|------:|---:|---------:|---------:|--------:|---------:|
-| 1 | `TXG` | 10x Genomics, Inc. | US $1bn+ | Industrials | 85.71 | 99 | 0.0% | +610.7% | 43.5 | 0.954 |
-| 2 | `TWST` | Twist Bioscience Corporation | US $1bn+ | Health Care | 182.83 | 99 | 0.7% | +576.6% | 56.8 | 0.939 |
-| 3 | `IOVA` | Iovance Biotherapeutics, Inc. | US $1bn+ | Health Care | 11.00 | 99 | 0.0% | +418.9% | 35.7 | 0.910 |
-| 4 | `APGE` | Apogee Therapeutics, Inc. | US $1bn+ | Health Care | 135.07 | 98 | 0.0% | +271.4% | 36.3 | 0.893 |
-| 5 | `ASX` | ASE Technology Holding Co., Ltd. | US $1bn+ | Technology | 44.31 | 98 | 2.0% | +287.8% | 58.0 | 0.892 |
-| 6 | `ALNT` | Allient Inc. | US $1bn+ | Industrials | 116.01 | 96 | 0.0% | +161.3% | 44.2 | 0.891 |
-| 7 | `MRNA` | Moderna, Inc. | US $1bn+ | Health Care | 198.88 | 99 | 0.0% | +668.5% | 31.0 | 0.882 |
-| 8 | `SEPL.L` | Seplat Energy Plc | UK $1bn+ | Energy | 870.00 | 98 | 1.9% | +208.1% | 43.1 | 0.873 |
-| 9 | `CDNA` | CareDx, Inc. | US $1bn+ | Health Care | 63.68 | 99 | 0.0% | +322.8% | 28.9 | 0.857 |
-| 10 | `AVT` | Avnet, Inc. | US $1bn+ | Technology | 103.08 | 94 | 0.0% | +98.3% | 45.8 | 0.841 |
-| 11 | `AMD` | Advanced Micro Devices, Inc. | US $1bn+ | Technology | 630.63 | 98 | 0.0% | +292.0% | 26.5 | 0.835 |
-| 12 | `SMTC` | Semtech Corporation | US $1bn+ | Technology | 182.30 | 97 | 1.5% | +204.7% | 33.7 | 0.822 |
-| 13 | `BGEO.L` | Lion Finance Group PLC | UK $1bn+ | Financial Services | 14580.00 | 93 | 0.0% | +96.1% | 47.5 | 0.821 |
-| 14 | `PRLB` | Proto Labs, Inc. | US $1bn+ | Industrials | 96.25 | 93 | 0.0% | +95.1% | 43.5 | 0.817 |
-| 15 | `DRTS` | Alpha Tau Medical Ltd. | US $1bn+ | Health Care | 14.54 | 98 | 6.2% | +258.1% | 61.8 | 0.814 |
-| 16 | `TBBB` | BBB Foods Inc. | US $1bn+ | Consumer Staples | 53.56 | 93 | 0.0% | +108.5% | 38.3 | 0.812 |
-| 17 | `KLR.L` | Keller Group plc | UK $1bn+ | Industrials | 3306.00 | 95 | 4.0% | +134.5% | 63.1 | 0.808 |
-| 18 | `BFLY` | Butterfly Network, Inc. | US $1bn+ | Health Care | 9.39 | 98 | 5.4% | +353.6% | 41.5 | 0.803 |
-| 19 | `FBRX` | Forte Biosciences, Inc. | US $1bn+ | Health Care | 76.99 | 99 | 0.0% | +580.4% | 18.0 | 0.803 |
-| 20 | `INSW` | International Seaways, Inc. | US $1bn+ | Consumer Discretionary | 105.64 | 96 | 5.0% | +146.6% | 76.8 | 0.801 |
-| 21 | `RVMD` | Revolution Medicines, Inc. | US $1bn+ | Health Care | 204.97 | 98 | 7.3% | +370.8% | 58.3 | 0.799 |
-| 22 | `ILMN` | Illumina, Inc. | US $1bn+ | Health Care | 270.00 | 97 | 1.4% | +186.0% | 30.8 | 0.795 |
-| 23 | `IMOS` | ChipMOS TECHNOLOGIES INC. | US $1bn+ | Technology | 71.78 | 98 | 5.3% | +265.2% | 39.1 | 0.785 |
-| 24 | `DELL` | Dell Technologies Inc. | US $1bn+ | Technology | 562.89 | 98 | 4.3% | +330.9% | 31.7 | 0.784 |
-| 25 | `HPE` | Hewlett Packard Enterprise Company | US $1bn+ | Technology | 62.94 | 97 | 0.9% | +160.5% | 28.2 | 0.782 |
-| 26 | `NMM` | Navios Maritime Partners L.P. | US $1bn+ | Consumer Discretionary | 91.51 | 92 | 2.3% | +88.4% | 61.0 | 0.771 |
-| 27 | `AAMI` | Acadian Asset Management Inc. | US $1bn+ | Finance | 93.88 | 94 | 3.5% | +97.8% | 54.0 | 0.769 |
-| 28 | `MU` | Micron Technology, Inc. | US $1bn+ | Technology | 1082.28 | 99 | 10.8% | +570.2% | 53.9 | 0.767 |
-| 29 | `VLO` | Valero Energy Corporation | US $1bn+ | Energy | 387.18 | 96 | 6.3% | +129.5% | 59.0 | 0.767 |
-| 30 | `ARW` | Arrow Electronics, Inc. | US $1bn+ | Technology | 232.80 | 93 | 0.9% | +92.5% | 38.9 | 0.763 |
-| 31 | `CLMT` | Calumet, Inc. | US $1bn+ | Energy | 53.65 | 97 | 9.1% | +189.8% | 65.2 | 0.758 |
-| 32 | `NAT` | Nordic American Tankers Limited | US $1bn+ | Consumer Discretionary | 7.72 | 96 | 6.4% | +151.6% | 53.1 | 0.756 |
-| 33 | `ECPG` | Encore Capital Group, Inc. | US $1bn+ | Finance | 98.41 | 92 | 5.1% | +127.9% | 76.0 | 0.744 |
-| 34 | `CCC.L` | Computacenter plc | UK $1bn+ | Technology | 5410.00 | 95 | 4.6% | +107.0% | 43.9 | 0.743 |
-| 35 | `NTRA` | Natera, Inc. | US $1bn+ | Health Care | 412.56 | 97 | 0.0% | +151.7% | 17.0 | 0.741 |
-| 36 | `ECO` | Okeanis Eco Tankers Corp. | US $1bn+ | Consumer Discretionary | 77.90 | 97 | 9.7% | +177.0% | 56.0 | 0.738 |
-| 37 | `ABCL` | AbCellera Biologics Inc. | US $1bn+ | Health Care | 12.70 | 98 | 0.2% | +166.2% | 13.5 | 0.730 |
-| 38 | `RNG` | RingCentral, Inc. | US $1bn+ | Technology | 76.16 | 98 | 4.6% | +149.1% | 31.1 | 0.730 |
-| 39 | `COHU` | Cohu, Inc. | US $1bn+ | Industrials | 67.00 | 97 | 9.3% | +226.7% | 41.5 | 0.728 |
-| 40 | `AVNS` | Avanos Medical, Inc. | US $1bn+ | Health Care | 24.99 | 94 | 0.2% | +106.4% | 27.6 | 0.727 |
-| 41 | `SNDK` | Sandisk Corporation | US $1bn+ | Technology | 1777.80 | 99 | 23.9% | +1680.8% | 45.9 | 0.726 |
-| 42 | `STX` | Seagate Technology Holdings plc | US $1bn+ | Technology | 916.83 | 98 | 16.1% | +312.9% | 48.2 | 0.726 |
-| 43 | `MATX` | Matson, Inc. | US $1bn+ | Consumer Discretionary | 224.66 | 92 | 5.8% | +117.5% | 58.9 | 0.722 |
-| 44 | `TH` | Target Hospitality Corp. | US $1bn+ | Consumer Discretionary | 20.58 | 96 | 4.1% | +125.2% | 32.1 | 0.721 |
-| 45 | `NEOG` | Neogen Corporation | US $1bn+ | Health Care | 13.76 | 96 | 1.6% | +153.9% | 23.4 | 0.720 |
-| 46 | `CRNX` | Crinetics Pharmaceuticals, Inc. | US $1bn+ | Health Care | 84.95 | 98 | 0.0% | +155.1% | 8.7 | 0.720 |
-| 47 | `FRO` | Frontline plc | US $1bn+ | Consumer Discretionary | 47.73 | 95 | 7.2% | +117.1% | 48.6 | 0.719 |
-| 48 | `CMBT` | Cmb.Tech NV | US $1bn+ | Consumer Discretionary | 19.01 | 95 | 6.9% | +99.7% | 59.5 | 0.716 |
-| 49 | `VTRS` | Viatris Inc. | US $1bn+ | Health Care | 17.83 | 88 | 0.2% | +87.3% | 38.0 | 0.715 |
-| 50 | `NHC` | National HealthCare Corporation | US $1bn+ | Health Care | 227.36 | 90 | 4.0% | +85.3% | 79.9 | 0.715 |
-| 51 | `NESR` | National Energy Services Reunited Corp. | US $1bn+ | Energy | 32.13 | 96 | 11.5% | +206.6% | 51.5 | 0.711 |
-| 52 | `GH` | Guardant Health, Inc. | US $1bn+ | Health Care | 177.25 | 96 | 3.2% | +207.4% | 23.1 | 0.705 |
-| 53 | `WT` | WisdomTree, Inc. | US $1bn+ | Finance | 24.33 | 94 | 2.8% | +70.6% | 36.7 | 0.700 |
-| 54 | `UMC` | United Microelectronics Corporation | US $1bn+ | Technology | 24.31 | 98 | 11.7% | +230.7% | 37.5 | 0.699 |
-| 55 | `PLSE` | Pulse Biosciences, Inc. | US $1bn+ | Health Care | 51.63 | 98 | 6.5% | +192.2% | 28.8 | 0.695 |
-| 56 | `IRDM` | Iridium Communications Inc. | US $1bn+ | Telecommunications | 48.75 | 97 | 12.5% | +184.7% | 43.2 | 0.694 |
-| 57 | `MSGS` | Madison Square Garden Sports Corp. | US $1bn+ | Consumer Discretionary | 402.84 | 86 | 2.7% | +85.4% | 58.0 | 0.694 |
-| 58 | `MRX` | Marex Group Limited | US $1bn+ | Finance | 71.31 | 94 | 8.9% | +118.1% | 59.0 | 0.691 |
-| 59 | `HILS.L` | Hill & Smith PLC | UK $1bn+ | Industrials | 3250.00 | 88 | 0.0% | +60.9% | 36.8 | 0.689 |
-| 60 | `KEYS` | Keysight Technologies, Inc. | US $1bn+ | Industrials | 362.15 | 91 | 3.0% | +107.6% | 34.0 | 0.688 |
-| 61 | `AYA` | Aya Gold & Silver Inc. | US $1bn+ | Basic Materials | 28.47 | 97 | 6.3% | +158.6% | 30.9 | 0.686 |
-| 62 | `DGII` | Digi International Inc. | US $1bn+ | Telecommunications | 78.30 | 93 | 8.1% | +111.3% | 59.9 | 0.684 |
-| 63 | `PBF` | PBF Energy Inc. | US $1bn+ | Energy | 73.69 | 97 | 5.9% | +134.0% | 29.7 | 0.682 |
-| 64 | `LITE` | Lumentum Holdings Inc. | US $1bn+ | Telecommunications | 941.65 | 98 | 10.6% | +516.5% | 31.1 | 0.680 |
-| 65 | `PSX` | Phillips 66 | US $1bn+ | Energy | 255.75 | 94 | 6.7% | +90.4% | 42.8 | 0.679 |
-| 66 | `FTNT` | Fortinet, Inc. | US $1bn+ | Technology | 173.46 | 95 | 3.0% | +107.5% | 26.6 | 0.679 |
-| 67 | `ADPT` | Adaptive Biotechnologies Corporation | US $1bn+ | Health Care | 29.43 | 96 | 0.5% | +129.6% | 12.2 | 0.675 |
-| 68 | `EMG.L` | Man Group Plc | UK $1bn+ | Financial Services | 330.00 | 88 | 3.8% | +86.0% | 43.7 | 0.673 |
-| 69 | `AMRX` | Amneal Pharmaceuticals, Inc. | US $1bn+ | Health Care | 19.77 | 92 | 1.9% | +103.6% | 28.6 | 0.673 |
-| 70 | `MGRT` | Mega Fortune Company Limited | US $1bn+ | Technology | 121.71 | 99 | 14.4% | +2678.8% | 30.6 | 0.669 |
-| 71 | `MPC` | Marathon Petroleum Corporation | US $1bn+ | Energy | 393.52 | 96 | 7.4% | +105.8% | 35.8 | 0.668 |
-| 72 | `DAC` | Danaos Corporation | US $1bn+ | Consumer Discretionary | 154.14 | 90 | 5.1% | +68.2% | 79.4 | 0.668 |
-| 73 | `LQDT` | Liquidity Services, Inc. | US $1bn+ | Consumer Discretionary | 43.61 | 86 | 0.0% | +58.2% | 38.5 | 0.667 |
-| 74 | `TWLO` | Twilio Inc. | US $1bn+ | Technology | 275.80 | 97 | 8.0% | +167.1% | 31.3 | 0.666 |
-| 75 | `ETON` | Eton Pharmaceuticals, Inc. | US $1bn+ | Health Care | 57.68 | 98 | 10.5% | +189.4% | 31.3 | 0.666 |
-| 76 | `CON` | Concentra Group Holdings Parent, Inc. | US $1bn+ | Health Care | 35.01 | 92 | 3.7% | +70.8% | 38.5 | 0.665 |
-| 77 | `HNGE` | Hinge Health, Inc. | US $1bn+ | Technology | 95.57 | 95 | 0.0% | +76.2% | 17.5 | 0.663 |
-| 78 | `GSAT` | Globalstar, Inc. | US $1bn+ | Consumer Discretionary | 82.88 | 89 | 1.8% | +132.0% | 27.2 | 0.663 |
-| 79 | `CGEO.L` | Georgia Capital PLC | UK $1bn+ | Financial Services | 4690.00 | 90 | 6.6% | +99.6% | 51.4 | 0.661 |
-| 80 | `RSW.L` | Renishaw plc | UK $1bn+ | Technology | 5660.00 | 89 | 0.0% | +61.1% | 31.9 | 0.659 |
-| 81 | `INTC` | Intel Corporation | US $1bn+ | Technology | 123.00 | 98 | 12.7% | +294.0% | 31.1 | 0.659 |
-| 82 | `IUVL.L` | iShares Edge MSCI USA Value | Factor ETF | Factor | 19.32 | 84 | 1.6% | +64.6% | 54.0 | 0.657 |
-| 83 | `PBT` | Permian Basin Royalty Trust | US $1bn+ | Energy | 33.53 | 94 | 7.1% | +83.9% | 42.3 | 0.656 |
-| 84 | `CHEF` | The Chefs' Warehouse, Inc. | US $1bn+ | Consumer Discretionary | 110.27 | 92 | 4.5% | +85.5% | 35.6 | 0.656 |
-| 85 | `PGEN` | Precigen, Inc. | US $1bn+ | Health Care | 7.75 | 95 | 1.8% | +100.8% | 18.5 | 0.655 |
-| 86 | `LPG` | Dorian LPG Ltd. | US $1bn+ | Consumer Discretionary | 53.43 | 95 | 8.4% | +80.1% | 43.4 | 0.653 |
-| 87 | `IMAX` | IMAX Corporation | US $1bn+ | Consumer Discretionary | 56.05 | 92 | 0.0% | +73.7% | 23.2 | 0.651 |
-| 88 | `MTRN` | Materion Corporation | US $1bn+ | Industrials | 264.96 | 94 | 10.9% | +123.8% | 41.7 | 0.650 |
-| 89 | `DINO` | HF Sinclair Corporation | US $1bn+ | Energy | 106.82 | 96 | 8.4% | +106.0% | 34.7 | 0.649 |
-| 90 | `CPRX` | Catalyst Pharmaceuticals, Inc. | US $1bn+ | Healthcare | 31.49 | 87 | 0.0% | +49.7% | 39.5 | 0.645 |
-| 91 | `BC94.L` | Samsung Electronics Co., Ltd. | UK $1bn+ | Technology | 5090.00 | 97 | 15.3% | +237.5% | 33.3 | 0.643 |
-| 92 | `PLPC` | Preformed Line Products Company | US $1bn+ | Industrials | 423.33 | 93 | 11.9% | +113.9% | 45.2 | 0.642 |
-| 93 | `SHG` | Shinhan Financial Group Co., Ltd. | US $1bn+ | Finance | 80.95 | 90 | 4.2% | +66.2% | 39.5 | 0.642 |
-| 94 | `SIMO` | Silicon Motion Technology Corporation | US $1bn+ | Technology | 276.23 | 97 | 18.0% | +202.3% | 34.3 | 0.640 |
-| 95 | `DOCN` | DigitalOcean Holdings, Inc. | US $1bn+ | Technology | 139.75 | 97 | 22.9% | +284.8% | 34.3 | 0.639 |
-| 96 | `TGT` | Target Corporation | US $1bn+ | Consumer Discretionary | 157.45 | 90 | 7.3% | +82.4% | 70.3 | 0.638 |
-| 97 | `BWLP` | BW LPG Limited | US $1bn+ | Consumer Discretionary | 24.23 | 94 | 7.3% | +65.8% | 49.6 | 0.637 |
-| 98 | `NEO` | NeoGenomics, Inc. | US $1bn+ | Health Care | 19.33 | 96 | 2.9% | +145.6% | 10.4 | 0.633 |
-| 99 | `SMH.L` | VanEck Semiconductor | Thematic ETF | Semiconductors | 114.14 | 92 | 8.5% | +111.7% | 38.9 | 0.631 |
-| 100 | `GCT` | GigaCloud Technology Inc. | US $1bn+ | Consumer Discretionary | 53.98 | 93 | 0.0% | +81.3% | 13.1 | 0.624 |
+| 1 | `ASX` | ASE Technology Holding Co., Ltd. | US $1bn+ | Technology | 47.45 | 98 | 0.0% | +330.6% | 56.9 | 0.949 |
+| 2 | `TXG` | 10x Genomics, Inc. | US $1bn+ | Industrials | 93.50 | 99 | 0.0% | +654.6% | 43.0 | 0.945 |
+| 3 | `ECO` | Okeanis Eco Tankers Corp. | US $1bn+ | Consumer Discretionary | 87.28 | 98 | 0.0% | +217.1% | 55.4 | 0.926 |
+| 4 | `INSW` | International Seaways, Inc. | US $1bn+ | Consumer Discretionary | 115.81 | 97 | 0.0% | +178.6% | 78.3 | 0.920 |
+| 5 | `IMOS` | ChipMOS TECHNOLOGIES INC. | US $1bn+ | Technology | 83.30 | 98 | 0.0% | +336.4% | 38.8 | 0.912 |
+| 6 | `NAT` | Nordic American Tankers Limited | US $1bn+ | Consumer Discretionary | 8.42 | 96 | 0.0% | +170.3% | 53.3 | 0.899 |
+| 7 | `LIND` | Lindblad Expeditions Holdings, Inc. | US $1bn+ | Consumer Discretionary | 34.78 | 97 | 0.0% | +180.0% | 48.5 | 0.898 |
+| 8 | `TWST` | Twist Bioscience Corporation | US $1bn+ | Health Care | 188.67 | 99 | 2.4% | +544.8% | 56.7 | 0.890 |
+| 9 | `APGE` | Apogee Therapeutics, Inc. | US $1bn+ | Health Care | 135.07 | 98 | 0.0% | +271.4% | 36.3 | 0.885 |
+| 10 | `FRO` | Frontline plc | US $1bn+ | Consumer Discretionary | 52.74 | 96 | 0.0% | +148.3% | 49.6 | 0.884 |
+| 11 | `ALNT` | Allient Inc. | US $1bn+ | Industrials | 118.30 | 96 | 0.0% | +160.5% | 44.1 | 0.877 |
+| 12 | `COHU` | Cohu, Inc. | US $1bn+ | Industrials | 73.48 | 98 | 0.6% | +259.8% | 41.7 | 0.876 |
+| 13 | `MTRN` | Materion Corporation | US $1bn+ | Industrials | 312.16 | 96 | 0.0% | +155.3% | 42.5 | 0.873 |
+| 14 | `LITE` | Lumentum Holdings Inc. | US $1bn+ | Telecommunications | 1085.42 | 98 | 0.0% | +533.3% | 29.9 | 0.855 |
+| 15 | `CDNA` | CareDx, Inc. | US $1bn+ | Health Care | 67.15 | 99 | 0.0% | +347.7% | 29.5 | 0.853 |
+| 16 | `SMTC` | Semtech Corporation | US $1bn+ | Technology | 194.88 | 97 | 0.0% | +171.9% | 34.4 | 0.853 |
+| 17 | `VLO` | Valero Energy Corporation | US $1bn+ | Energy | 406.30 | 96 | 1.7% | +145.3% | 62.9 | 0.846 |
+| 18 | `HPE` | Hewlett Packard Enterprise Company | US $1bn+ | Technology | 69.33 | 98 | 0.0% | +181.6% | 30.4 | 0.833 |
+| 19 | `AVT` | Avnet, Inc. | US $1bn+ | Technology | 106.94 | 95 | 0.0% | +108.2% | 48.3 | 0.831 |
+| 20 | `AMD` | Advanced Micro Devices, Inc. | US $1bn+ | Technology | 633.91 | 98 | 0.0% | +286.5% | 26.5 | 0.820 |
+| 21 | `DRTS` | Alpha Tau Medical Ltd. | US $1bn+ | Health Care | 14.77 | 97 | 4.7% | +238.0% | 63.0 | 0.815 |
+| 22 | `DAC` | Danaos Corporation | US $1bn+ | Consumer Discretionary | 165.15 | 93 | 0.0% | +87.6% | 83.6 | 0.806 |
+| 23 | `MPC` | Marathon Petroleum Corporation | US $1bn+ | Energy | 422.33 | 97 | 0.6% | +121.8% | 38.7 | 0.805 |
+| 24 | `CHEF` | The Chefs' Warehouse, Inc. | US $1bn+ | Consumer Discretionary | 116.42 | 95 | 0.0% | +113.2% | 37.1 | 0.804 |
+| 25 | `PRLB` | Proto Labs, Inc. | US $1bn+ | Industrials | 98.21 | 94 | 0.0% | +100.4% | 44.5 | 0.804 |
+| 26 | `DHT` | DHT Holdings, Inc. | US $1bn+ | Consumer Discretionary | 23.68 | 94 | 0.0% | +112.3% | 37.3 | 0.795 |
+| 27 | `FBRX` | Forte Biosciences, Inc. | US $1bn+ | Health Care | 76.99 | 99 | 0.0% | +580.4% | 18.0 | 0.795 |
+| 28 | `IOVA` | Iovance Biotherapeutics, Inc. | US $1bn+ | Health Care | 14.22 | 99 | 4.0% | +543.4% | 34.5 | 0.794 |
+| 29 | `LPG` | Dorian LPG Ltd. | US $1bn+ | Consumer Discretionary | 57.21 | 96 | 1.9% | +111.6% | 48.8 | 0.794 |
+| 30 | `RVMD` | Revolution Medicines, Inc. | US $1bn+ | Health Care | 206.64 | 98 | 6.6% | +350.6% | 56.9 | 0.794 |
+| 31 | `ARW` | Arrow Electronics, Inc. | US $1bn+ | Technology | 242.01 | 94 | 0.0% | +98.9% | 40.3 | 0.793 |
+| 32 | `RNG` | RingCentral, Inc. | US $1bn+ | Technology | 78.28 | 98 | 1.9% | +179.4% | 33.1 | 0.791 |
+| 33 | `CLMT` | Calumet, Inc. | US $1bn+ | Energy | 55.28 | 97 | 6.4% | +200.1% | 67.7 | 0.786 |
+| 34 | `CMBT` | Cmb.Tech NV | US $1bn+ | Consumer Discretionary | 19.85 | 95 | 2.7% | +124.4% | 61.2 | 0.785 |
+| 35 | `UMC` | United Microelectronics Corporation | US $1bn+ | Technology | 26.27 | 98 | 4.6% | +260.8% | 38.6 | 0.784 |
+| 36 | `TRMD` | TORM plc | US $1bn+ | Consumer Discretionary | 40.00 | 94 | 0.0% | +102.1% | 35.6 | 0.780 |
+| 37 | `ILMN` | Illumina, Inc. | US $1bn+ | Health Care | 273.04 | 97 | 0.3% | +167.0% | 30.4 | 0.776 |
+| 38 | `PBF` | PBF Energy Inc. | US $1bn+ | Energy | 80.78 | 98 | 1.9% | +175.7% | 31.0 | 0.766 |
+| 39 | `TNK` | Teekay Tankers Ltd. | US $1bn+ | Consumer Discretionary | 103.10 | 94 | 0.0% | +106.0% | 33.0 | 0.765 |
+| 40 | `TWLO` | Twilio Inc. | US $1bn+ | Technology | 294.58 | 97 | 2.2% | +186.8% | 31.6 | 0.763 |
+| 41 | `DELL` | Dell Technologies Inc. | US $1bn+ | Technology | 562.52 | 98 | 4.4% | +280.0% | 33.5 | 0.762 |
+| 42 | `KLR.L` | Keller Group plc | UK $1bn+ | Industrials | 3328.00 | 94 | 3.4% | +117.3% | 64.6 | 0.761 |
+| 43 | `BWLP` | BW LPG Limited | US $1bn+ | Consumer Discretionary | 25.64 | 94 | 1.9% | +97.6% | 56.6 | 0.760 |
+| 44 | `KEYS` | Keysight Technologies, Inc. | US $1bn+ | Industrials | 384.64 | 93 | 0.0% | +122.2% | 33.3 | 0.760 |
+| 45 | `NMM` | Navios Maritime Partners L.P. | US $1bn+ | Consumer Discretionary | 92.53 | 92 | 1.3% | +104.3% | 61.1 | 0.760 |
+| 46 | `MU` | Micron Technology, Inc. | US $1bn+ | Technology | 1074.89 | 99 | 11.4% | +491.0% | 52.4 | 0.759 |
+| 47 | `MATX` | Matson, Inc. | US $1bn+ | Consumer Discretionary | 231.11 | 93 | 3.1% | +135.7% | 56.6 | 0.751 |
+| 48 | `FTNT` | Fortinet, Inc. | US $1bn+ | Technology | 180.95 | 95 | 0.0% | +112.4% | 28.3 | 0.750 |
+| 49 | `DINO` | HF Sinclair Corporation | US $1bn+ | Energy | 113.36 | 96 | 2.8% | +123.8% | 37.1 | 0.749 |
+| 50 | `BFLY` | Butterfly Network, Inc. | US $1bn+ | Health Care | 8.95 | 98 | 9.9% | +371.1% | 41.2 | 0.733 |
+| 51 | `AAMI` | Acadian Asset Management Inc. | US $1bn+ | Finance | 94.17 | 94 | 3.2% | +104.4% | 58.8 | 0.732 |
+| 52 | `PARR` | Par Pacific Holdings, Inc. | US $1bn+ | Energy | 84.00 | 95 | 2.9% | +140.6% | 34.4 | 0.728 |
+| 53 | `MRNA` | Moderna, Inc. | US $1bn+ | Health Care | 190.01 | 99 | 6.6% | +588.4% | 31.0 | 0.722 |
+| 54 | `PSX` | Phillips 66 | US $1bn+ | Energy | 264.58 | 95 | 3.5% | +99.9% | 45.2 | 0.720 |
+| 55 | `TBBB` | BBB Foods Inc. | US $1bn+ | Consumer Staples | 52.65 | 92 | 1.7% | +110.7% | 38.3 | 0.717 |
+| 56 | `PGEN` | Precigen, Inc. | US $1bn+ | Health Care | 8.54 | 97 | 0.2% | +155.7% | 19.0 | 0.708 |
+| 57 | `CRNX` | Crinetics Pharmaceuticals, Inc. | US $1bn+ | Health Care | 84.95 | 98 | 0.0% | +155.1% | 8.7 | 0.707 |
+| 58 | `MRX` | Marex Group Limited | US $1bn+ | Finance | 72.75 | 94 | 7.1% | +140.1% | 60.9 | 0.701 |
+| 59 | `KOD` | Kodiak Sciences Inc. | US $1bn+ | Health Care | 94.45 | 99 | 4.1% | +499.3% | 22.5 | 0.698 |
+| 60 | `SEPL.L` | Seplat Energy Plc | UK $1bn+ | Energy | 789.00 | 97 | 11.0% | +155.1% | 45.2 | 0.696 |
+| 61 | `AMN` | AMN Healthcare Services, Inc. | US $1bn+ | Consumer Discretionary | 36.63 | 94 | 0.0% | +83.4% | 28.9 | 0.694 |
+| 62 | `HAFN` | Hafnia Limited | US $1bn+ | Consumer Discretionary | 10.25 | 94 | 0.0% | +83.8% | 28.2 | 0.690 |
+| 63 | `OKTA` | Okta, Inc. | US $1bn+ | Technology | 211.49 | 97 | 0.5% | +130.7% | 18.1 | 0.689 |
+| 64 | `WT` | WisdomTree, Inc. | US $1bn+ | Finance | 24.38 | 94 | 2.6% | +80.7% | 40.2 | 0.682 |
+| 65 | `AVNS` | Avanos Medical, Inc. | US $1bn+ | Health Care | 24.99 | 94 | 0.2% | +106.4% | 27.6 | 0.681 |
+| 66 | `NTAP` | NetApp, Inc. | US $1bn+ | Technology | 226.27 | 96 | 0.0% | +93.7% | 20.8 | 0.677 |
+| 67 | `SFL` | SFL Corporation Ltd. | US $1bn+ | Consumer Discretionary | 13.45 | 91 | 2.2% | +83.0% | 45.0 | 0.677 |
+| 68 | `IRDM` | Iridium Communications Inc. | US $1bn+ | Telecommunications | 48.96 | 96 | 12.1% | +182.4% | 42.6 | 0.671 |
+| 69 | `VSTS` | Vestis Corporation | US $1bn+ | Consumer Discretionary | 14.03 | 95 | 15.0% | +184.6% | 50.0 | 0.671 |
+| 70 | `TEN` | Tsakos Energy Navigation Limited | US $1bn+ | Consumer Discretionary | 50.05 | 94 | 5.2% | +124.6% | 36.2 | 0.667 |
+| 71 | `CON` | Concentra Group Holdings Parent, Inc. | US $1bn+ | Health Care | 35.65 | 91 | 2.0% | +72.5% | 41.5 | 0.667 |
+| 72 | `CCC.L` | Computacenter plc | UK $1bn+ | Technology | 5405.00 | 93 | 4.7% | +96.4% | 45.2 | 0.666 |
+| 73 | `NTRA` | Natera, Inc. | US $1bn+ | Health Care | 410.35 | 96 | 1.0% | +153.9% | 17.1 | 0.662 |
+| 74 | `CVE` | Cenovus Energy Inc. | US $1bn+ | Energy | 32.40 | 93 | 4.5% | +95.7% | 43.1 | 0.659 |
+| 75 | `PANW` | Palo Alto Networks, Inc. | US $1bn+ | Technology | 403.24 | 95 | 0.0% | +95.0% | 17.5 | 0.658 |
+| 76 | `TER` | Teradyne, Inc. | US $1bn+ | Industrials | 449.04 | 96 | 7.2% | +218.6% | 31.1 | 0.658 |
+| 77 | `WCC` | WESCO International, Inc. | US $1bn+ | Consumer Discretionary | 381.73 | 89 | 0.0% | +80.4% | 31.1 | 0.657 |
+| 78 | `RSW.L` | Renishaw plc | UK $1bn+ | Technology | 5960.00 | 91 | 0.0% | +60.2% | 33.5 | 0.655 |
+| 79 | `NHC` | National HealthCare Corporation | US $1bn+ | Health Care | 227.66 | 89 | 3.8% | +84.8% | 78.3 | 0.655 |
+| 80 | `ETON` | Eton Pharmaceuticals, Inc. | US $1bn+ | Health Care | 55.36 | 98 | 14.1% | +173.2% | 35.1 | 0.653 |
+| 81 | `ABSI` | Absci Corporation | US $1bn+ | Health Care | 11.07 | 98 | 4.7% | +253.7% | 20.2 | 0.653 |
+| 82 | `GH` | Guardant Health, Inc. | US $1bn+ | Health Care | 177.80 | 95 | 2.9% | +183.8% | 23.0 | 0.650 |
+| 83 | `UFCS` | United Fire Group, Inc. | US $1bn+ | Finance | 54.62 | 88 | 2.4% | +83.5% | 49.3 | 0.649 |
+| 84 | `HNGE` | Hinge Health, Inc. | US $1bn+ | Technology | 97.67 | 95 | 0.3% | +100.3% | 19.0 | 0.646 |
+| 85 | `SIMO` | Silicon Motion Technology Corporation | US $1bn+ | Technology | 280.50 | 97 | 16.7% | +191.7% | 34.5 | 0.642 |
+| 86 | `UGP` | Ultrapar Participações S.A. | US $1bn+ | Utilities | 7.45 | 93 | 3.1% | +88.1% | 33.6 | 0.641 |
+| 87 | `SMH.L` | VanEck Semiconductor | Thematic ETF | Semiconductors | 118.36 | 92 | 5.2% | +108.7% | 38.4 | 0.636 |
+| 88 | `AMRX` | Amneal Pharmaceuticals, Inc. | US $1bn+ | Health Care | 20.30 | 92 | 1.0% | +95.6% | 28.6 | 0.636 |
+| 89 | `MSGS` | Madison Square Garden Sports Corp. | US $1bn+ | Consumer Discretionary | 406.95 | 86 | 2.3% | +77.1% | 56.5 | 0.634 |
+| 90 | `DOCN` | DigitalOcean Holdings, Inc. | US $1bn+ | Technology | 140.07 | 97 | 22.7% | +290.5% | 33.0 | 0.633 |
+| 91 | `CAKE` | The Cheesecake Factory Incorporated | US $1bn+ | Consumer Discretionary | 109.65 | 96 | 6.5% | +103.7% | 33.5 | 0.632 |
+| 92 | `BC94.L` | Samsung Electronics Co., Ltd. | UK $1bn+ | Technology | 5130.00 | 97 | 14.6% | +226.1% | 32.1 | 0.630 |
+| 93 | `INTC` | Intel Corporation | US $1bn+ | Technology | 119.33 | 98 | 15.3% | +232.0% | 31.2 | 0.630 |
+| 94 | `PLSE` | Pulse Biosciences, Inc. | US $1bn+ | Health Care | 47.90 | 98 | 13.2% | +164.3% | 31.3 | 0.629 |
+| 95 | `MXL` | MaxLinear, Inc. | US $1bn+ | Technology | 105.93 | 99 | 17.3% | +547.5% | 27.2 | 0.627 |
+| 96 | `MRVL` | Marvell Technology, Inc. | US $1bn+ | Technology | 272.29 | 98 | 13.9% | +225.3% | 29.0 | 0.621 |
+| 97 | `MSM` | MSC Industrial Direct Co., Inc. | US $1bn+ | Industrials | 130.12 | 86 | 0.0% | +48.0% | 41.6 | 0.613 |
+| 98 | `VCTR` | Victory Capital Holdings, Inc. | US $1bn+ | Finance | 113.23 | 93 | 6.5% | +84.7% | 39.7 | 0.612 |
+| 99 | `PEB` | Pebblebrook Hotel Trust | US $1bn+ | Real Estate | 19.07 | 88 | 3.4% | +70.3% | 49.2 | 0.610 |
+| 100 | `DGII` | Digi International Inc. | US $1bn+ | Telecommunications | 75.61 | 91 | 11.3% | +108.1% | 59.2 | 0.610 |
